@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions, ScrollView, ImageBackground, SafeAreaView } from 'react-native';
 import { Ionicons, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
 import axios from 'axios';
 import { Checkbox } from 'react-native-paper';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // For shared preferences
 
-
-const apiUrl = 'http://192.168.1.65:3000/api/login'; 
+const apiUrl = 'http://192.168.1.64:3000/api/login';
 
 const { width, height } = Dimensions.get('window');
 
@@ -15,7 +13,6 @@ export default function LoginScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [checked, setChecked] = useState(false); // Remember me checkbox
-  const [isRemembered, setIsRemembered] = useState(false);
 
   // Handle login API request
   const handleLogin = async () => {
@@ -27,42 +24,23 @@ export default function LoginScreen({ navigation }: any) {
         text1: 'Login Successful'
       });
 
-
       if (response.status === 200) {
         setTimeout(() => navigation.navigate('Dashboard'), 2000); // Navigate to Home page after login
       }
-      console.log('yes')
+      console.log('yes');
     } catch (error) {
       Toast.show({
         type: 'error',
         text1: 'Login Failed',
       });
       
-      console.log(error)
+      console.log(error);
     }
   };
-
-  // Retrieve saved credentials from shared preferences
-  const loadCredentials = async () => {
-    const savedEmail = await AsyncStorage.getItem('userEmail');
-    const savedPassword = await AsyncStorage.getItem('userPassword');
-    if (savedEmail && savedPassword) {
-      setEmail(savedEmail);
-      setPassword(savedPassword);
-      setChecked(true); // Auto-check the "Remember Me" if credentials are saved
-    }
-  };
-
-  useEffect(() => {
-    loadCredentials(); // Load saved credentials on component mount
-  }, []);
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container}>
-      
-
-     
         <ImageBackground
           style={styles.headerContainer}
           resizeMode="cover"
@@ -73,37 +51,35 @@ export default function LoginScreen({ navigation }: any) {
           </Text>
         </ImageBackground>
 
-       
         <View style={styles.formContainer}>
           <View style={styles.inputWrapper}>
-            <Ionicons name="mail-outline" size={24} color="#70b9be" style={styles.inputIcon} />
+            <Ionicons name="mail-outline" size={24} color="#fdb15a" style={styles.inputIcon} />
             <TextInput
               placeholder="Email"
               style={styles.input}
-              placeholderTextColor="#70b9be"
+              placeholderTextColor="#fdb15a"
               onChangeText={setEmail}
               value={email}
             />
           </View>
 
           <View style={styles.inputWrapper}>
-            <Ionicons name="lock-closed-outline" size={24} color="#70b9be" style={styles.inputIcon} />
+            <Ionicons name="lock-closed-outline" size={24} color="#fdb15a" style={styles.inputIcon} />
             <TextInput
               placeholder="Password"
               style={styles.input}
-              placeholderTextColor="#70b9be"
+              placeholderTextColor="#fdb15a"
               secureTextEntry
               onChangeText={setPassword}
               value={password}
             />
           </View>
 
-         
           <View style={styles.checkboxContainer}>
             <Checkbox
               status={checked ? 'checked' : 'unchecked'}
               onPress={() => setChecked(!checked)}
-              color={checked ? '#70b9be' : '#666'}
+              color={checked ? '#fdb15a' : '#666'}
             />
             <Text style={styles.checkboxText}>Remember Me</Text>
           </View>
@@ -112,14 +88,12 @@ export default function LoginScreen({ navigation }: any) {
             <Text style={styles.registerButtonText}>Login</Text>
           </TouchableOpacity>
 
-       
           <View style={styles.signUpSection}>
             <View style={styles.line} />
             <Text style={styles.signUpText}>Or login with</Text>
             <View style={styles.line} />
           </View>
 
-       
           <View style={styles.socialIcons}>
             <TouchableOpacity style={styles.socialIcon}>
               <FontAwesome name="google" size={24} color="white" />
@@ -132,10 +106,9 @@ export default function LoginScreen({ navigation }: any) {
             </TouchableOpacity>
           </View>
 
-      
           <Text style={styles.loginText}>
             Don't have an account?{' '}
-            <Text style={styles.loginLink} onPress={() => navigation.navigate('Dashboard')}>
+            <Text style={styles.loginLink} onPress={() => navigation.navigate('Register')}>
               Register
             </Text>
           </Text>
@@ -160,11 +133,11 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     width: '100%',
-    height: height * 0.25, // Adjust height as needed (25% of screen height)
+    height: height * 0.25,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
-    backgroundColor: '#70b9be',
+    backgroundColor: '#fdb15a',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
@@ -201,7 +174,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 15,
     borderWidth: 1,
-    borderColor: '#70b9be',
+    borderColor: '#fdb15a',
     borderRadius: 5,
     paddingHorizontal: 10,
     marginTop: 30,
@@ -213,7 +186,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 50,
     fontSize: 16,
-    color: '#333',
+    color: '#fdb15a',
   },
   checkboxContainer: {
     flexDirection: 'row',
@@ -227,7 +200,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   registerButton: {
-    backgroundColor: '#70b9be',
+    backgroundColor: '#fdb15a',
     paddingVertical: 15,
     borderRadius: 5,
     alignItems: 'center',
@@ -246,7 +219,7 @@ const styles = StyleSheet.create({
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: '#ccc',
+    backgroundColor: '#fdb15a',
   },
   signUpText: {
     marginHorizontal: 10,
@@ -261,7 +234,7 @@ const styles = StyleSheet.create({
     letterSpacing: 20,
   },
   socialIcon: {
-    backgroundColor: '#70b9be',
+    backgroundColor: '#fdb15a',
     borderRadius: 10,
     padding: 10,
     width: 50,
@@ -276,7 +249,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   loginLink: {
-    color: '#70b9be',
+    color: '#fdb15a',
     fontWeight: 'bold',
     textDecorationLine: 'underline',
   },

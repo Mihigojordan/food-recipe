@@ -1,27 +1,16 @@
-import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import Toast from 'react-native-toast-message';
+import { useState, useEffect } from 'react';
 
-const apiUrl = 'http://192.168.1.65:3000/api/register'; 
+const apiUrl = 'http://192.168.1.64:3000/api/register'; 
+const preferencesUrl = 'http://192.168.1.64:3000/api/recipes'; // Ensure this returns cultural origins
 const { width } = Dimensions.get('window');
 
-const preferencesList = [
-  'Preference 1',
-  'Preference 2',
-  'Preference 3',
-  'Preference 4',
-  'Preference 5',
-  'Preference 6',
-  'Preference 7',
-  'Preference 8',
-  'Preference 9',
-  'Preference 10',
-];
-
-export default function PreferencesScreen({ navigation }:any) {
+export default function PreferencesScreen({ navigation }: any) {
   const [selectedPreferences, setSelectedPreferences] = useState<string[]>([]);
+  const [preferencesList, setPreferencesList] = useState<string[]>([]);
   const [userData, setUserData] = useState<{ username: string; email: string; password: string } | null>(null);
 
   useEffect(() => {
@@ -35,7 +24,22 @@ export default function PreferencesScreen({ navigation }:any) {
         Toast.show({ type: 'error', text1: 'Failed to load user data' });
       }
     };
+
+    const fetchPreferences = async () => {
+      try {
+        const response = await axios.get(preferencesUrl);
+        if (response.data) {
+          // Assuming response.data contains an array of cultural origins
+          const culturalOrigins = response.data.map((item: any) => item.culturalOrigin); // Adjust based on your API structure
+          setPreferencesList(culturalOrigins);
+        }
+      } catch (error) {
+        Toast.show({ type: 'error', text1: 'Failed to load preferences' });
+      }
+    };
+
     fetchUserData();
+    fetchPreferences();
   }, []);
 
   const togglePreference = (preference: string) => {
@@ -46,7 +50,7 @@ export default function PreferencesScreen({ navigation }:any) {
 
   const handleSubmitPreferences = async () => {
     if (selectedPreferences.length < 4) {
-      Toast.show({ type: 'error', text1: 'Please select at least 4 preferences.' });
+      Toast.show({ type: 'error', text1: 'Please select at least 4 cultural origins.' });
       return;
     }
 
@@ -59,8 +63,8 @@ export default function PreferencesScreen({ navigation }:any) {
       await axios.post(apiUrl, { ...userData, preferences: selectedPreferences });
       Toast.show({ type: 'success', text1: 'Registration completed successfully!' });
       setTimeout(() => {
-        navigation.navigate('Login'); 
-      }, 3000); 
+        navigation.navigate('Login');
+      }, 3000);
     } catch (error) {
       Toast.show({ type: 'error', text1: 'Failed to complete registration' });
     }
@@ -87,18 +91,18 @@ export default function PreferencesScreen({ navigation }:any) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Choose Your Favorite Meal</Text>
+      <Text style={styles.title}>Choose Your Cultural Origins</Text>
       <FlatList
         data={preferencesList}
         renderItem={renderPreferenceItem}
         keyExtractor={(item) => item}
-        numColumns={2} 
+        numColumns={2}
         contentContainerStyle={styles.gridContainer}
       />
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmitPreferences}>
         <Text style={styles.submitButtonText}>Save Preferences</Text>
       </TouchableOpacity>
-      <Toast /> 
+      <Toast />
     </View>
   );
 }
@@ -130,8 +134,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   selectedButton: {
-    backgroundColor: '#70b9be',
-    borderColor: '#70b9be',
+    backgroundColor: '#fdb15a',
+    borderColor: '#fdb15a',
   },
   preferenceText: {
     fontSize: 16,
@@ -142,7 +146,7 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     marginTop: 20,
-    backgroundColor: '#70b9be',
+    backgroundColor: '#fdb15a',
     borderRadius: 5,
     paddingVertical: 15,
     width: width * 0.9,

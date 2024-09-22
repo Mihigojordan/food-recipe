@@ -8,7 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'; // For sav
 
 
 
-const apiUrl = 'http://192.168.1.65:3000/api/register'; // Use your local IP address here
+const apiUrl = 'http://192.168.1.64:3000/api/register'; // Use your local IP address here
 
 const { width, height } = Dimensions.get('window');
 
@@ -38,7 +38,7 @@ export default function RegisterScreen({ navigation }: any) {
         text2: 'Account created successfully!',
         topOffset: 20,
       });
-      setTimeout(() => navigation.navigate('preferences'), 2000);
+      setTimeout(() => navigation.navigate('Preferences'), 2000);
     } catch (error) {
       Toast.show({
         type: 'error',
@@ -68,33 +68,33 @@ export default function RegisterScreen({ navigation }: any) {
       {/* Form Section */}
       <View style={styles.formContainer}>
         <View style={styles.inputWrapper}>
-          <Ionicons name="person-outline" size={24} color="#70b9be" style={styles.inputIcon} />
+          <Ionicons name="person-outline" size={24} color="#fdb15a" style={styles.inputIcon} />
           <TextInput
             placeholder="Username"
             style={styles.input}
-            placeholderTextColor="#70b9be"
+            placeholderTextColor="#fdb15a"
             onChangeText={setUsername}
             value={username}
           />
         </View>
 
         <View style={styles.inputWrapper}>
-          <Ionicons name="mail-outline" size={24} color="#70b9be" style={styles.inputIcon} />
+          <Ionicons name="mail-outline" size={24} color="#fdb15a" style={styles.inputIcon} />
           <TextInput
             placeholder="Email"
             style={styles.input}
-            placeholderTextColor="#70b9be"
+            placeholderTextColor="#fdb15a"
             onChangeText={setEmail}
             value={email}
           />
         </View>
 
         <View style={styles.inputWrapper}>
-          <Ionicons name="lock-closed-outline" size={24} color="#70b9be" style={styles.inputIcon} />
+          <Ionicons name="lock-closed-outline" size={24} color="#fdb15a" style={styles.inputIcon} />
           <TextInput
             placeholder="Password"
             style={styles.input}
-            placeholderTextColor="#70b9be"
+            placeholderTextColor="#fdb15a"
             secureTextEntry
             onChangeText={setPassword}
             value={password}
@@ -106,7 +106,7 @@ export default function RegisterScreen({ navigation }: any) {
           <Checkbox
             status={checked ? 'checked' : 'unchecked'}
             onPress={() => setChecked(!checked)}
-            color={checked ? '#70b9be' : '#666'}
+            color={checked ? '#fdb15a' : '#666'}
           />
           <Text style={styles.checkboxText}>I accept the terms and conditions</Text>
         </View>
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
-    backgroundColor:'#70b9be',
+    backgroundColor:'#fdb15a',
 borderTopLeftRadius:20,
 borderTopRightRadius:20,
   },
@@ -212,7 +212,7 @@ borderTopRightRadius:20,
     alignItems: 'center',
     marginBottom: 15,
     borderWidth: 1,
-    borderColor: '#70b9be',
+    borderColor: '#fdb15a',
     borderRadius: 5,
     paddingHorizontal: 10,
     marginTop:30,
@@ -224,7 +224,7 @@ borderTopRightRadius:20,
     flex: 1,
     height: 50,
     fontSize: 16,
-    color: '#333',
+    color: '#fdb15a',
   
   },
   checkboxContainer: {
@@ -239,7 +239,7 @@ borderTopRightRadius:20,
     marginLeft: 8,
   },
   registerButton: {
-    backgroundColor: '#70b9be',
+backgroundColor: '#fdb15a',
     paddingVertical: 15,
     borderRadius: 5,
     alignItems: 'center',
@@ -258,7 +258,7 @@ borderTopRightRadius:20,
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: '#ccc',
+    backgroundColor: '#fdb15a',
   },
   signUpText: {
     marginHorizontal: 10,
@@ -275,7 +275,7 @@ borderTopRightRadius:20,
 
   },
   socialIcon: {
-    backgroundColor: '#70b9be',
+    backgroundColor: '#fdb15a',
     borderRadius:10,
     padding: 10,
     width: 50,
@@ -288,7 +288,7 @@ borderTopRightRadius:20,
     fontSize: 16,
   },
   loginLink: {
-    color: '#70b9be',
+    color: '#fdb15a',
     fontWeight: 'bold',
   },
 });

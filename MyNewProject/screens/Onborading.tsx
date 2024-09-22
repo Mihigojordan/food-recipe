@@ -55,7 +55,7 @@
           styles.slide,
           {
             backgroundColor:
-              currentSlide === slides.length - 1 ? '#70b9be' : '#ffffff', // Main app color for the last screen
+              currentSlide === slides.length - 1 ? '#fdb15a' : '#ffffff', // Main app color for the last screen
           },
         ]}
       >
@@ -106,7 +106,7 @@
     if (loading) {
       return (
         <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color="#70b9be" />
+          <ActivityIndicator size="large" color="#fdb15a" />
         </View>
       );
     }
@@ -141,8 +141,8 @@
       width: width * 0.6,
       height: width * 0.6,
       borderRadius: (width * 0.6) / 2,
-      borderWidth: 25,
-      borderColor: '#70b9be',
+      borderWidth:20,
+      borderColor: '#fdb15a',
       overflow: 'hidden',
       marginBottom: 10,
       position: 'absolute',
@@ -195,7 +195,7 @@
     },
     progress: {
       height: '100%',
-      backgroundColor: '#70b9be',
+      backgroundColor: '#fdb15a',
     },
     stepContainer: {
       flexDirection: 'row',
@@ -214,7 +214,7 @@
     bottomButton: {
       position: 'absolute',
       bottom: 30,
-      backgroundColor: '#70b9be',
+      backgroundColor: '#fdb15a',
       paddingVertical: 12,
       paddingHorizontal: 30,
       borderRadius: 8,
@@ -235,16 +235,16 @@
       marginBottom: 30,
     },
     finalLoginButton: {
-      backgroundColor: '#4b8b92',
+      backgroundColor: 'white',
       width: '80%',
     },
     buttonText: {
-      color: '#fff',
+      color: '#fdb15a',
       fontSize: 18,
       fontWeight: 'bold',
     },
     createAccountText: {
-      color: '#fff',
+      color: 'white',
       fontSize: 16,
       marginTop: 20,
       textAlign: 'center',

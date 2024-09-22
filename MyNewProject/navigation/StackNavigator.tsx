@@ -7,6 +7,7 @@ import PreferencesScreen from '../screens/PreferencesScreen';
 import RecipeDetail from '../screens/RecipeDetail';
 import CategoryDetail from '../screens/CategoryDetail';
 import BottomTabNavigator from '../components/BottomTabNavigator';
+import SearchResults from '../screens/SearchResults';
 
 // Define and export the RootStackParamList for navigation
 export type RootStackParamList = {
@@ -17,6 +18,7 @@ export type RootStackParamList = {
   Dashboard: undefined;
   RecipeDetail: { id: string };
   CategoryDetail: { id: string };
+  SearchResults: { searchQuery: string }; // For SearchResults screen
   
 };
 
@@ -42,11 +44,12 @@ export default function StackNavigator() {
         component={RegisterScreen}
         options={{ headerShown: false }}
       />
-      <Stack.Screen
-        name="Preferences"
-        component={PreferencesScreen}
-        options={{ headerShown: false }}
-      />
+     <Stack.Screen
+  name="Preferences"
+  component={PreferencesScreen}
+  options={{ headerShown: false }}
+/>
+
       {/* Nest the BottomTabNavigator for Dashboard */}
       <Stack.Screen
         name="Dashboard"
@@ -63,6 +66,7 @@ export default function StackNavigator() {
         component={CategoryDetail}
         options={{ title: 'Category Detail' }} // Customize the header title
       />
+            <Stack.Screen name="SearchResults" component={SearchResults} /> 
         
     </Stack.Navigator>
   );

@@ -9,6 +9,7 @@ const cors = require("cors");
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 
 
 
@@ -46,6 +47,7 @@ sequelize.sync().then(() => {
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {
+
     console.error(err.stack);
     res.status(500).send('Something went wrong!');
 });

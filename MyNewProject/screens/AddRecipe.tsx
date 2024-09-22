@@ -4,25 +4,32 @@ import * as ImagePicker from 'expo-image-picker'; // For image picking
 import { Ionicons } from '@expo/vector-icons'; // Icon for image picker
 
 const AddRecipe = () => {
-  const [recipe, setRecipe] = useState({
+  const [recipe, setRecipe] = useState<{
+    name: string;
+    description: string;
+    culturalOrigin: string;
+    tags: string;
+    ingredients: { name: string; quantity: string }[];
+  }>({
     name: '',
     description: '',
     culturalOrigin: '',
     tags: '',
-    ingredients: [''],
+    ingredients: [{ name: '', quantity: '' }],
   });
+  
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // Handle ingredient input changes
-  const handleIngredientChange = (index: number, value: string) => {
+  const handleIngredientChange = (index: number, key: 'name' | 'quantity', value: string) => {
     const newIngredients = [...recipe.ingredients];
-    newIngredients[index] = value;
+    newIngredients[index][key] = value;
     setRecipe({ ...recipe, ingredients: newIngredients });
   };
 
   // Add more ingredients
   const addIngredient = () => {
-    setRecipe({ ...recipe, ingredients: [...recipe.ingredients, ''] });
+    setRecipe({ ...recipe, ingredients: [...recipe.ingredients, { name: '', quantity: '' }] });
   };
 
   // Image picker function
@@ -39,19 +46,22 @@ const AddRecipe = () => {
     }
   };
 
-  // Submit recipe function
   const handleSubmit = async () => {
     try {
-      // Create a new FormData object to send text and image data
       const formData = new FormData();
-
+  
       // Add recipe data
       formData.append('name', recipe.name);
       formData.append('description', recipe.description);
       formData.append('culturalOrigin', recipe.culturalOrigin);
       formData.append('tags', recipe.tags);
-      formData.append('ingredients', JSON.stringify(recipe.ingredients)); // Send ingredients as JSON
-
+  
+      // Instead of stringifying the ingredients, send them as a regular form field
+      recipe.ingredients.forEach((ingredient, index) => {
+        formData.append(`ingredients[${index}][name]`, ingredient.name);
+        formData.append(`ingredients[${index}][quantity]`, ingredient.quantity);
+      });
+  
       // Add selected image if any
       if (selectedImage) {
         const imageName = selectedImage.split('/').pop(); // Get the image name from the URI
@@ -62,37 +72,44 @@ const AddRecipe = () => {
         };
         formData.append('image', image as any);
       }
-
+  
+      console.log(formData);
+  
       // Sending data to backend using fetch (You can replace fetch with axios if needed)
-      const response = await fetch('https://your-backend-api.com/recipes', {
+      const response = await fetch('http://192.168.1.64:3000/api/recipes/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',
         },
         body: formData,
       });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        Alert.alert('Success', 'Recipe added successfully!');
-        // Clear the form after successful submission
-        setRecipe({
-          name: '',
-          description: '',
-          culturalOrigin: '',
-          tags: '',
-          ingredients: [''],
-        });
-        setSelectedImage(null);
-      } else {
-        Alert.alert('Error', result.message || 'Something went wrong!');
+  
+      if (!response.ok) {
+        const errorText = await response.text(); // Read the response as text for better debugging
+        console.error('Response error:', errorText);
+        Alert.alert('Error', 'Failed to submit recipe. ' + errorText);
+        return;
       }
+  
+      const result = await response.json(); // Parse JSON response
+      Alert.alert('Success', 'Recipe added successfully!');
+  
+      // Clear the form after successful submission
+      setRecipe({
+        name: '',
+        description: '',
+        culturalOrigin: '',
+        tags: '',
+        ingredients: [{ name: '', quantity: '' }],
+      });
+      setSelectedImage(null);
+  
     } catch (error) {
-      console.error(error);
-      Alert.alert('Error', 'Failed to submit recipe.');
+      console.error('Fetch error:', error);
+      Alert.alert('Error', 'Network request failed. Please check your connection and try again.');
     }
   };
+  
 
   return (
     <View style={styles.wrapper}>
@@ -119,14 +136,13 @@ const AddRecipe = () => {
           style={styles.input}
         />
         
-        {/* Description as TextArea */}
         <TextInput
           placeholder="Description"
           value={recipe.description}
           onChangeText={(text) => setRecipe({ ...recipe, description: text })}
-          style={[styles.input, styles.textArea]} // Add textArea style
+          style={[styles.input, styles.textArea]}
           multiline={true}
-          numberOfLines={4} // Number of lines in the text area
+          numberOfLines={4}
         />
         
         <TextInput
@@ -148,10 +164,16 @@ const AddRecipe = () => {
         {recipe.ingredients.map((ingredient, index) => (
           <View key={index} style={styles.ingredientContainer}>
             <TextInput
-              placeholder={`Ingredient ${index + 1}`}
-              value={ingredient}
-              onChangeText={(text) => handleIngredientChange(index, text)}
-              style={styles.input}
+              placeholder={`Ingredient ${index + 1} Name`}
+              value={ingredient.name}
+              onChangeText={(text) => handleIngredientChange(index, 'name', text)}
+              style={[styles.input, { flex: 1 }]}
+            />
+            <TextInput
+              placeholder="Quantity"
+              value={ingredient.quantity}
+              onChangeText={(text) => handleIngredientChange(index, 'quantity', text)}
+              style={[styles.input, { flex: 1 }]}
             />
           </View>
         ))}
@@ -196,8 +218,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   textArea: {
-    height: 100, // Text area height
-    textAlignVertical: 'top', // Ensures text starts from the top in the multiline input
+    height: 100,
+    textAlignVertical: 'top',
   },
   imageUploadContainer: {
     alignItems: 'center',

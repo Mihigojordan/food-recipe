@@ -1,5 +1,5 @@
 const express = require('express');
-const { addRecipe, getAllRecipes, getRecipeById } = require('../Controllers/recipeController');
+const { addRecipe, getAllRecipes, getRecipeById, searchRecipes } = require('../Controllers/recipeController');
 const multer = require('multer');
 const path = require('path');
 
@@ -25,5 +25,8 @@ router.get('/', getAllRecipes);
 
 // Route to get recipe by ID
 router.get('/:id', getRecipeById);
+
+// Search route
+router.get('/search', searchRecipes); // Search route for recipes
 
 module.exports = router;

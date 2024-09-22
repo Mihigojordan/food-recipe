@@ -16,7 +16,7 @@ const Recipe = sequelize.define('Recipe', {
         type: DataTypes.STRING,
     },
     ingredients: {
-        type: DataTypes.JSONB, // Storing ingredients as an array
+        type: DataTypes.JSON, // Correcting to JSON for MySQL/MariaDB compatibility
     },
     imageUrl: {
         type: DataTypes.STRING, // To store the uploaded image path

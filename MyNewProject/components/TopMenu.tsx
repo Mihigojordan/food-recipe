@@ -1,24 +1,34 @@
-// TopMenu.tsx
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Make sure to install this package if not already done
+import { Ionicons } from '@expo/vector-icons'; // Use Ionicons for the icons
 
-const TopMenu = ({ username, greeting }:any) => {
+const TopMenu = ({ username, greeting, hasNotifications }: any) => {
   const hour = new Date().getHours();
-  const iconName = hour < 12 ? 'sunny-outline' : 'moon-outline'; // Sun icon for morning, moon for night
+  const iconName = hour < 12 ? 'sunny-outline' : 'moon-outline'; // Sun for morning, moon for night
+  const iconColor = hour < 12 ? '#fdb15a' : '#fdb15a'; // Orange for day, blue for night
 
   return (
     <View style={styles.container}>
-      <View style={styles.greetingContainer}>
-        <Ionicons name={iconName} size={24} color="#000" />
-        <Text style={styles.greetingText}>{greeting}</Text>
+
+      <View style={styles.leftSection}>
+        <TouchableOpacity style={styles.menuButton}>
+          <Ionicons name="menu" size={28} color="black" /> 
+        </TouchableOpacity>
+
+        
+        <View style={styles.greetingContainer}>
+          <Ionicons name={iconName} size={20} color={iconColor} /> 
+          <Text style={styles.greetingText}>{greeting},</Text>
+          <Text style={styles.username}>{username}</Text>
+        </View>
       </View>
-      <View style={styles.usernameContainer}>
-        <Text style={styles.username}>{username}</Text>
+     <View style={styles.notificationContainer}>
+        <TouchableOpacity>
+          <Ionicons name="notifications-outline" size={28} color="black" />
+      
+          {hasNotifications && <View style={styles.notificationDot} />}
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.menuButton}>
-        <Ionicons name="menu" size={24} color="#000" />
-      </TouchableOpacity>
     </View>
   );
 };
@@ -28,30 +38,46 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    borderBottomColor: '#eee',
+  },
+  leftSection: {
+    flexDirection: 'column', // Stack the menu icon on top of greeting and username
+    alignItems: 'flex-start', // Align to the start of the container
+  },
+  menuButton: {
+    paddingBottom: 5, // Add space between the menu icon and the text below
   },
   greetingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginTop: 5, // Space between menu and greeting
   },
   greetingText: {
     marginLeft: 5,
-    fontSize: 18,
-  },
-  usernameContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 5,
+    fontSize: 16,
+    color: '#333', // A darker grey for better contrast
   },
   username: {
+    marginLeft: 5,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#007BFF', // Change color as needed
+    color: '#fdb15a', // Use blue for the username
   },
-  menuButton: {
-    padding: 10,
+  notificationContainer: {
+    position: 'relative', // To position the notification dot
+  },
+  notificationDot: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: 'yellow', // Yellow dot for notifications
   },
 });
 
