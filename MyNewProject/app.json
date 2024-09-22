@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "FoodRecipe",
-    "slug": "FoodRecipe",
+    "name": "MyNewProject",
+    "slug": "MyNewProject",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -19,8 +19,7 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "package": "com.mihigojordan.FoodRecipe"
+      }
     },
     "web": {
       "bundler": "metro",
@@ -32,14 +31,6 @@
     ],
     "experiments": {
       "typedRoutes": true
-    },
-    "extra": {
-      "router": {
-        "origin": false
-      },
-      "eas": {
-        "projectId": "f1514dc7-4c89-4579-9f9a-45a82f1ca803"
-      }
     }
   }
 }

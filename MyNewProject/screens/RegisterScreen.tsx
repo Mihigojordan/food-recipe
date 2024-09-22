@@ -1,93 +1,100 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions, ScrollView } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions, ScrollView, ImageBackground,SafeAreaView } from 'react-native';
 import { Ionicons, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
 import axios from 'axios';
- // Import CheckBox here
-// import CheckBox from 'expo-checkbox';
+import { Checkbox } from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // For saving user data locally
 
 
-const apiUrl = 'http://192.168.1.73:3000/api/register'; // Use your local IP address here
 
-const { width } = Dimensions.get('window');
+const apiUrl = 'http://192.168.1.65:3000/api/register'; // Use your local IP address here
+
+const { width, height } = Dimensions.get('window');
 
 export default function RegisterScreen({ navigation }: any) {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isChecked, setIsChecked] = useState(false);
+  const [checked, setChecked] = useState(false);
 
   const handleRegister = async () => {
-    try {
-      const response = await axios.post(apiUrl, {
-        username,
-        email,
-        password,
+    if (!checked) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Please accept the terms and conditions.',
+        topOffset: 20,
       });
-
+      return;
+    }
+    try {
+  // Save user data locally
+  await AsyncStorage.setItem('userData', JSON.stringify({ username, email, password }));
+      
       Toast.show({
         type: 'success',
         text1: 'Success',
         text2: 'Account created successfully!',
         topOffset: 20,
       });
-
-      setTimeout(() => {
-        navigation.navigate('Login');
-      }, 2000);
+      setTimeout(() => navigation.navigate('preferences'), 2000);
     } catch (error) {
       Toast.show({
         type: 'error',
         text1: 'Registration Failed',
-        // text2: error.response ? error.response.data.error : 'Something went wrong',
         topOffset: 20,
       });
     }
   };
 
   return (
+    <SafeAreaView style={styles.safeArea} >
     <ScrollView contentContainerStyle={styles.container}>
       <Toast />
 
-      {/* Header Section */}
-      <View style={styles.headerContainer}>
-        <Text style={styles.helloText}>Hello</Text>
-        <Text style={styles.helloText}>There</Text>
+      {/* Banner Section */}
+      <ImageBackground
+        // source={bannerImage} 
+        style={styles.headerContainer}
+        resizeMode="cover"
+      >
+        <Text style={styles.helloText}>Hello There</Text>
         <Text style={styles.subText}>
-          Welcome! Let's get you all set up so you can start using the app.
+          Welcome! Let’s get you all set up so you can start using the app.
         </Text>
-      </View>
+      </ImageBackground>
 
       {/* Form Section */}
       <View style={styles.formContainer}>
         <View style={styles.inputWrapper}>
-          <Ionicons name="person-outline" size={24} color="#D32F2F" style={styles.inputIcon} />
+          <Ionicons name="person-outline" size={24} color="#70b9be" style={styles.inputIcon} />
           <TextInput
             placeholder="Username"
             style={styles.input}
-            placeholderTextColor="#D32F2F"
+            placeholderTextColor="#70b9be"
             onChangeText={setUsername}
             value={username}
           />
         </View>
 
         <View style={styles.inputWrapper}>
-          <Ionicons name="mail-outline" size={24} color="#D32F2F" style={styles.inputIcon} />
+          <Ionicons name="mail-outline" size={24} color="#70b9be" style={styles.inputIcon} />
           <TextInput
             placeholder="Email"
             style={styles.input}
-            placeholderTextColor="#D32F2F"
+            placeholderTextColor="#70b9be"
             onChangeText={setEmail}
             value={email}
           />
         </View>
 
         <View style={styles.inputWrapper}>
-          <Ionicons name="lock-closed-outline" size={24} color="#D32F2F" style={styles.inputIcon} />
+          <Ionicons name="lock-closed-outline" size={24} color="#70b9be" style={styles.inputIcon} />
           <TextInput
             placeholder="Password"
             style={styles.input}
-            placeholderTextColor="#D32F2F"
+            placeholderTextColor="#70b9be"
             secureTextEntry
             onChangeText={setPassword}
             value={password}
@@ -96,12 +103,16 @@ export default function RegisterScreen({ navigation }: any) {
 
         {/* Terms & Conditions */}
         <View style={styles.checkboxContainer}>
-        
+          <Checkbox
+            status={checked ? 'checked' : 'unchecked'}
+            onPress={() => setChecked(!checked)}
+            color={checked ? '#70b9be' : '#666'}
+          />
           <Text style={styles.checkboxText}>I accept the terms and conditions</Text>
         </View>
 
         {/* Register Button */}
-        <TouchableOpacity style={styles.registerButton} onPress={handleRegister} disabled={!isChecked}>
+        <TouchableOpacity style={styles.registerButton} onPress={handleRegister} disabled={!checked}>
           <Text style={styles.registerButtonText}>Sign Up</Text>
         </TouchableOpacity>
 
@@ -134,42 +145,77 @@ export default function RegisterScreen({ navigation }: any) {
         </Text>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    
+  },
   container: {
     flexGrow: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
-    padding: 10,
-    backgroundColor: '#fff',
+    padding: 0,
+    backgroundColor: '#ffffff',
+
   },
   headerContainer: {
-    marginBottom: 20,
+    width: '100%',
+    height: height * 0.25, // Adjust height as needed (25% of screen height)
+    justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 20,
+    backgroundColor:'#70b9be',
+borderTopLeftRadius:20,
+borderTopRightRadius:20,
   },
   helloText: {
     fontSize: 36,
     fontWeight: 'bold',
-    color: '#D32F2F',
+    color: '#fff',
+    textShadowColor: '#000',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
   },
   subText: {
     textAlign: 'center',
     fontSize: 16,
-    color: '#666',
+    color: '#fff',
     marginTop: 10,
   },
   formContainer: {
-    width: '100%',
-    maxWidth: 400,
+    width: '100%', // Make the form full width
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 0, // Remove rounded corners
+    elevation: 0, // Remove shadow for Android
+    marginTop: 0, // Remove overlap with the banner
+    borderTopLeftRadius: 10, // Top left corner radius
+    borderTopRightRadius: 10, // Top right corner radius
+    borderColor:'red',
+
+  
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.2,
+    shadowRadius: 20,
+     zIndex:20,
+     position:'absolute',
+     top:220,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#D32F2F',
+    borderWidth: 1,
+    borderColor: '#70b9be',
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginTop:30,
   },
   inputIcon: {
     marginRight: 10,
@@ -179,21 +225,21 @@ const styles = StyleSheet.create({
     height: 50,
     fontSize: 16,
     color: '#333',
+  
   },
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 20,
-  },
-  checkbox: {
-    marginRight: 10,
+    marginBottom: 20,
+    justifyContent: 'flex-start', // Align checkbox to the left
   },
   checkboxText: {
     fontSize: 14,
     color: '#666',
+    marginLeft: 8,
   },
   registerButton: {
-    backgroundColor: '#D32F2F',
+    backgroundColor: '#70b9be',
     paddingVertical: 15,
     borderRadius: 5,
     alignItems: 'center',
@@ -221,12 +267,16 @@ const styles = StyleSheet.create({
   },
   socialIcons: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     marginBottom: 20,
+    width:'95%',
+
+    letterSpacing:20,
+
   },
   socialIcon: {
-    backgroundColor: '#D32F2F',
-    borderRadius: 25,
+    backgroundColor: '#70b9be',
+    borderRadius:10,
     padding: 10,
     width: 50,
     height: 50,
@@ -238,7 +288,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   loginLink: {
-    color: '#D32F2F',
+    color: '#70b9be',
     fontWeight: 'bold',
   },
 });

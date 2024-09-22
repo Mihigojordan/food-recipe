@@ -141,7 +141,7 @@
       width: width * 0.6,
       height: width * 0.6,
       borderRadius: (width * 0.6) / 2,
-      borderWidth: 20,
+      borderWidth: 25,
       borderColor: '#70b9be',
       overflow: 'hidden',
       marginBottom: 10,

@@ -4,6 +4,8 @@ import { Ionicons, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icon
 import './css.css'
 
 const { width } = Dimensions.get('window');
+const { height } = Dimensions.get('window');
+
 
 export default function LoginScreen({ navigation }: any) {
   return (
