@@ -1,5 +1,5 @@
 const Recipe = require('../Models/Recipe');
-const { Op } = require('sequelize'); // Import Sequelize operators
+const { Op, Sequelize } = require('sequelize'); // Import Sequelize operators
 require('dotenv').config();
 
 // Add a new recipe
@@ -54,32 +54,30 @@ const getRecipeById = async(req, res) => {
     }
 };
 
-const searchRecipes = async(req, res) => {
-    const { query } = req.query; // Get the search query from the query parameters
 
-    // Log the received query
-    console.log('Received Query:', query);
+const searchRecipes = async(req, res) => {
+    const { query } = req.query;
 
     if (!query) {
         return res.status(400).json({ message: 'Query parameter is required' });
     }
 
     try {
-        // Fetch all recipes for logging
-        const allRecipes = await Recipe.findAll();
-        console.log('All Recipes:', JSON.stringify(allRecipes, null, 2)); // Log all recipes
-
-        // Search for recipes based only on the name
         const recipes = await Recipe.findAll({
             where: {
-                name: {
-                    [Op.like]: `%${query}%`
-                }
+                [Op.or]: [
+                    { name: {
+                            [Op.like]: `%${query}%` } },
+                    { culturalOrigin: {
+                            [Op.like]: `%${query}%` } },
+                    Sequelize.where(
+                        Sequelize.json('ingredients'), {
+                            [Op.like]: `%${query}%`
+                        }
+                    )
+                ]
             }
         });
-
-        // Log the search results
-        console.log('Search Results:', JSON.stringify(recipes, null, 2)); // Log found recipes
 
         if (recipes.length === 0) {
             return res.status(404).json({ message: 'No recipes found' });

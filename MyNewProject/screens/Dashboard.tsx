@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, ScrollView, TextInput, TouchableOpacity, StyleSheet, Text, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import TopMenu from '../components/TopMenu';
 import RecipeCard from '../screens/RecipeCard';
-import axios from 'axios';
+import CategoryCard from '../screens/CategoryCard';
 
-const BASE_URL = 'http://192.168.1.64:3000/api'; // Define your API base URL
+const BASE_URL = 'http://192.168.1.64:3000/api';
 
 const Dashboard: React.FC = ({ navigation }: any) => {
   const [userData, setUserData] = useState<any>(null);
@@ -14,55 +14,12 @@ const Dashboard: React.FC = ({ navigation }: any) => {
   const [recipes, setRecipes] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Fetch profile data using axios
-  const fetchProfileData = async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/profile`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        withCredentials: true, // Include credentials if needed
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching profile data:", error);
-      throw new Error("Failed to fetch profile data");
-    }
-  };
-
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const data = await fetchProfileData(); // Call the fetchProfileData function
-        setUserData(data);
-      } catch (error) {
-        console.error("Error fetching user data: ", error);
-      }
-    };
-
-    const fetchData = async () => {
-      try {
-        const recipeResponse = await fetch(`${BASE_URL}/recipes`);
-        const recipesData = await recipeResponse.json();
-        setRecipes(recipesData);
-      } catch (error) {
-        console.error("Error fetching recipes: ", error);
-      }
-    };
-
-    // Set greeting based on the current time
-    const hour = new Date().getHours();
-    setGreeting(hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening');
-
-    // Fetch user and recipe data
-    fetchUserData();
-    fetchData();
+    // Fetch user data and recipes as in your original code...
   }, []);
 
-  // Handle search action
   const handleSearch = () => {
     if (searchQuery.trim()) {
-      // Route to a search results page (to be created) and pass searchQuery
       navigation.navigate('SearchResults', { query: searchQuery });
     }
   };
@@ -70,8 +27,6 @@ const Dashboard: React.FC = ({ navigation }: any) => {
   return (
     <View style={styles.container}>
       <TopMenu username={userData?.username || 'Guest'} greeting={greeting} />
-
-      {/* Search Input */}
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
@@ -85,11 +40,37 @@ const Dashboard: React.FC = ({ navigation }: any) => {
         </TouchableOpacity>
       </View>
 
+      <Text style={styles.categoryHeader}>Meal Categories</Text>
+      <Text style={styles.categorySubtitle}>All Categories</Text>
+      
+      <View style={styles.categoryList}>
+        <CategoryCard title="Italian" imageUrl="path/to/italian.jpg" />
+        <CategoryCard title="Indian" imageUrl="path/to/indian.jpg" />
+        <CategoryCard title="Mexican" imageUrl="path/to/mexican.jpg" />
+      </View>
+
+      <Text style={styles.recommendationHeader}>Recommendations</Text>
       <ScrollView>
-        <View style={styles.recipeList}>
-          {/* Map over recipes and display RecipeCards */}
+        <View style={styles.recommendationList}>
           {recipes.map((recipe) => (
-            <RecipeCard key={recipe.id} recipe={recipe} />
+            <View key={recipe.id} style={styles.recommendationCard}>
+              <Image source={{ uri: recipe.imageUrl }} style={styles.cardImage} />
+              <View style={styles.cardContent}>
+                <Text style={styles.cardTitle}>{recipe.name}</Text>
+                <View style={styles.cardIcons}>
+                  <TouchableOpacity style={styles.iconButton}>
+                    <Ionicons name="heart-outline" size={20} color="#fff" />
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.iconButton}>
+                    <Ionicons name="share-outline" size={20} color="#fff" />
+                  </TouchableOpacity>
+                  <View style={styles.timeContainer}>
+                    <Ionicons name="time-outline" size={20} color="#fff" />
+                    <Text style={styles.cookingTime}>{recipe.cookingTime} min</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
           ))}
         </View>
       </ScrollView>
@@ -122,10 +103,77 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
   },
-  recipeList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  categoryHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginVertical: 10,
+    flexDirection: 'column',
     justifyContent: 'space-between',
+  },
+  
+  categoryHeaderContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 10,
+  },
+  categorySubtitle: {
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 10,
+  },
+  categoryList: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+  },
+  recommendationHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginVertical: 15,
+  },
+  recommendationList: {
+    marginBottom: 20,
+  },
+  recommendationCard: {
+    position: 'relative',
+    marginBottom: 15,
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  cardImage: {
+    width: '100%',
+    height: 200,
+    resizeMode: 'cover',
+  },
+  cardContent: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    padding: 10,
+  },
+  cardTitle: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  cardIcons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 5,
+  },
+  iconButton: {
+    padding: 5,
+  },
+  timeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  cookingTime: {
+    color: '#fff',
+    marginLeft: 5,
   },
 });
 

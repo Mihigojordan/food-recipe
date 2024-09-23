@@ -22,11 +22,12 @@ router.post('/add', upload.single('image'), addRecipe);
 
 // Route to get all recipes
 router.get('/', getAllRecipes);
+// Search route
+router.get('/search', searchRecipes); // Search route for recipes
 
 // Route to get recipe by ID
 router.get('/:id', getRecipeById);
 
-// Search route
-router.get('/search', searchRecipes); // Search route for recipes
+
 
 module.exports = router;
