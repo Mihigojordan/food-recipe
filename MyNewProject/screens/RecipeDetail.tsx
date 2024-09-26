@@ -22,7 +22,7 @@ const RecipeDetail = ({ route }: any) => {
   // Fetch the recipe details by ID
   const fetchRecipeDetails = async () => {
     try {
-      const response = await fetch(`http://192.168.1.64:3000/api/recipes/${recipeId}`);
+      const response = await fetch(`http://192.168.243.181:3000/api/recipes/${recipeId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch recipe details');
       }

@@ -8,7 +8,7 @@ const addRecipe = async(req, res) => {
     const { query } = req.query;
     console.log('Received Query:', query);
     try {
-        const { name, description, culturalOrigin, tags, ingredients } = req.body;
+        const { name, description, culturalOrigin, tags, ingredients, cookingTime, } = req.body;
         const imageUrl = req.file ? req.file.filename : null; // Get uploaded image
 
         const newRecipe = await Recipe.create({
@@ -17,6 +17,7 @@ const addRecipe = async(req, res) => {
             culturalOrigin,
             tags,
             ingredients,
+            cookingTime,
             imageUrl,
         });
 
@@ -65,11 +66,16 @@ const searchRecipes = async(req, res) => {
     try {
         const recipes = await Recipe.findAll({
             where: {
-                [Op.or]: [
-                    { name: {
-                            [Op.like]: `%${query}%` } },
-                    { culturalOrigin: {
-                            [Op.like]: `%${query}%` } },
+                [Op.or]: [{
+                        name: {
+                            [Op.like]: `%${query}%`
+                        }
+                    },
+                    {
+                        culturalOrigin: {
+                            [Op.like]: `%${query}%`
+                        }
+                    },
                     Sequelize.where(
                         Sequelize.json('ingredients'), {
                             [Op.like]: `%${query}%`

@@ -15,21 +15,26 @@ const Profile: React.FC = () => {
 
   // Fetch profile data from the API
   useEffect(() => {
-    const fetchProfileData = async () => {
-      try {
-        const response = await fetch('http://192.168.1.64:3000/api/profile'); // Replace with your API endpoint
-        if (!response.ok) {
-          throw new Error('Failed to fetch profile data');
-        }
-        const data = await response.json();
-        setProfileData(data);
-      } catch (err) {
-        setError(err.message || 'Something went wrong');
-        Alert.alert('Error', err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+            const fetchProfileData = async () => {
+              try {
+                const response = await fetch('http://192.168.243.181:3000/api/profile'); // Replace with your API endpoint
+                if (!response.ok) {
+                  throw new Error('Failed to fetch profile data');
+                }
+                const data = await response.json();
+                setProfileData(data);
+              } catch (err) {
+                if (err instanceof Error) {
+                  setError(err.message || 'Something went wrong');
+                  Alert.alert('Error', err.message);
+                } else {
+                  setError('Something went wrong');
+                  Alert.alert('Error', 'Something went wrong');
+                }
+              } finally {
+                setLoading(false);
+              }
+            };
 
     fetchProfileData();
   }, []);

@@ -17,8 +17,9 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ title, imageUrl }) => {
 
 const styles = StyleSheet.create({
   card: {
-    width: '30%', // Adjust width to fit three cards
-    margin: 5, // Reduced margin for tighter spacing
+    width: '100%', // Full width of the container
+    aspectRatio: 1, // Maintains a square shape
+    margin: 5,
     borderRadius: 8,
     overflow: 'hidden',
     backgroundColor: '#fff',
@@ -27,14 +28,17 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
+    marginBottom:10,
+    justifyContent: 'center', // Centers content vertically
   },
   image: {
     width: '100%',
-    height: 80, // Adjust height for smaller cards
+    height: '60%', // Image takes up 80% of the card
+    resizeMode: 'cover',
   },
   title: {
     padding: 5,
-    fontSize: 14, // Reduced font size
+    fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',
   },

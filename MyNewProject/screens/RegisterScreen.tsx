@@ -8,7 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'; // For sav
 
 
 
-const apiUrl = 'http://192.168.1.64:3000/api/register'; // Use your local IP address here
+const apiUrl = 'http://192.168.243.181:3000/api/register'; // Use your local IP address here
 
 const { width, height } = Dimensions.get('window');
 

@@ -6,16 +6,65 @@ import TopMenu from '../components/TopMenu';
 import RecipeCard from '../screens/RecipeCard';
 import CategoryCard from '../screens/CategoryCard';
 
-const BASE_URL = 'http://192.168.1.64:3000/api';
+const BASE_URL = 'http://192.168.243.181:3000/api';
 
 const Dashboard: React.FC = ({ navigation }: any) => {
   const [userData, setUserData] = useState<any>(null);
   const [greeting, setGreeting] = useState('');
   const [recipes, setRecipes] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
+  const fetchProfileData = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/profile`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching profile data:", error);
+      throw new Error("Failed to fetch profile data");
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/categories`);
+      setCategories(response.data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
   useEffect(() => {
-    // Fetch user data and recipes as in your original code...
+    const fetchUserData = async () => {
+      try {
+        const data = await fetchProfileData();
+        setUserData(data);
+      } catch (error) {
+        console.error("Error fetching user data: ", error);
+      }
+    };
+
+    const fetchData = async () => {
+      try {
+        const recipeResponse = await fetch(`${BASE_URL}/recipes`);
+        const recipesData = await recipeResponse.json();
+        setRecipes(recipesData);
+      } catch (error) {
+        console.error("Error fetching recipes: ", error);
+      }
+    };
+
+    const hour = new Date().getHours();
+    setGreeting(hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening');
+
+    fetchUserData();
+    fetchData();
+    fetchCategories();
   }, []);
 
   const handleSearch = () => {
@@ -23,6 +72,17 @@ const Dashboard: React.FC = ({ navigation }: any) => {
       navigation.navigate('SearchResults', { query: searchQuery });
     }
   };
+
+  const handleCategoryPress = (category: any) => {
+    navigation.navigate('CategoryDetail', { id: category.id }); // Pass the category ID
+  };
+
+  const handleSeeAllCategories = () => {
+    navigation.navigate('AllCategories');
+  };
+
+  // Select only three categories to display
+  const displayedCategories = categories.slice(0, 3);
 
   return (
     <View style={styles.container}>
@@ -40,13 +100,26 @@ const Dashboard: React.FC = ({ navigation }: any) => {
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.categoryHeader}>Meal Categories</Text>
-      <Text style={styles.categorySubtitle}>All Categories</Text>
+      <View style={styles.categoryHeaderContainer}>
+        <Text style={styles.categoryHeader}>Meal Categories</Text>
+        <TouchableOpacity onPress={handleSeeAllCategories}>
+          <Text style={styles.seeAllText}>See All</Text>
+        </TouchableOpacity>
+      </View>
       
       <View style={styles.categoryList}>
-        <CategoryCard title="Italian" imageUrl="path/to/italian.jpg" />
-        <CategoryCard title="Indian" imageUrl="path/to/indian.jpg" />
-        <CategoryCard title="Mexican" imageUrl="path/to/mexican.jpg" />
+        {displayedCategories.map((category) => (
+          <TouchableOpacity
+            key={category.id}
+            onPress={() => handleCategoryPress(category)}
+            style={styles.categoryCardContainer}
+          >
+            <CategoryCard 
+              title={category.name} 
+              imageUrl={`http://192.168.0.101:3000/uploads/${category.imageUrl}`} 
+            />
+          </TouchableOpacity>
+        ))}
       </View>
 
       <Text style={styles.recommendationHeader}>Recommendations</Text>
@@ -92,6 +165,18 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingHorizontal: 10,
   },
+  categoryCardContainer: {
+    height: 120, // Height for the category card
+    width:'30%',  // Width for the category card to make it square
+    borderRadius: 10,
+    margin:2,
+    borderColor:'red',
+    textAlign:'center',
+    overflow: 'hidden',
+    marginBottom:10,
+    marginHorizontal: 5, // Margin for spacing between cards
+  },
+  
   searchInput: {
     flex: 1,
     height: 40,
@@ -103,23 +188,19 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
   },
-  categoryHeader: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginVertical: 10,
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-  },
-  
   categoryHeaderContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     marginVertical: 10,
   },
-  categorySubtitle: {
-    fontSize: 14,
-    color: '#555',
-    marginBottom: 10,
+  categoryHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  seeAllText: {
+    color: '#007BFF',
+    fontSize: 16,
   },
   categoryList: {
     flexDirection: 'row',
@@ -129,7 +210,7 @@ const styles = StyleSheet.create({
   recommendationHeader: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginVertical: 15,
+    marginVertical:15,
   },
   recommendationList: {
     marginBottom: 20,
@@ -142,7 +223,7 @@ const styles = StyleSheet.create({
   },
   cardImage: {
     width: '100%',
-    height: 200,
+    height: 150,
     resizeMode: 'cover',
   },
   cardContent: {

@@ -3,6 +3,11 @@ const express = require('express');
 const sequelize = require('./config/config');
 const authRouter = require('./Routers/AdminRouter');
 const recipeRoutes = require('./Routers/recipeRoutes');
+const categoryRoutes = require('./Routers/categoryRoutes');
+
+// const alarmRoutes = require('./Routers/alarmRoutes');
+const { checkAlarms } = require('./Controllers/alarmController');
+const cron = require('node-cron');
 const limiter = require('./Middleware/rateLimiter');
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
@@ -27,6 +32,8 @@ app.use(cors({
 // Use Routers
 app.use('/api', authRouter);
 app.use('/api/recipes', recipeRoutes);
+
+app.use('/api', categoryRoutes);
 
 
 // Test Database Connection
@@ -53,6 +60,10 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+
+    // console.log(new Date().toString());
+
 });

@@ -4,7 +4,7 @@ import axios from 'axios';
 import RecipeCard from '../screens/RecipeCard';
 
 
-const BASE_URL = 'http://192.168.1.64:3000/api'; // API base URL
+const BASE_URL = 'http://192.168.243.181:3000/api'; // API base URL
 
 const SearchResults: React.FC = ({ route }: any) => {
   const { query } = route.params; // Get the search query from navigation

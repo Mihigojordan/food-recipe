@@ -5,7 +5,7 @@ import Toast from 'react-native-toast-message';
 import axios from 'axios';
 import { Checkbox } from 'react-native-paper';
 
-const apiUrl = 'http://192.168.1.64:3000/api/login';
+const apiUrl = 'http://192.168.243.181:3000/api/login';
 
 const { width, height } = Dimensions.get('window');
 

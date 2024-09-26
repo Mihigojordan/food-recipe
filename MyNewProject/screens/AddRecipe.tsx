@@ -9,12 +9,14 @@ const AddRecipe = () => {
     description: string;
     culturalOrigin: string;
     tags: string;
+    cookingTime: string; // New state for cooking time
     ingredients: { name: string; quantity: string }[];
   }>({
     name: '',
     description: '',
     culturalOrigin: '',
     tags: '',
+    cookingTime: '', // Initialize cooking time
     ingredients: [{ name: '', quantity: '' }],
   });
   
@@ -55,8 +57,9 @@ const AddRecipe = () => {
       formData.append('description', recipe.description);
       formData.append('culturalOrigin', recipe.culturalOrigin);
       formData.append('tags', recipe.tags);
-  
-      // Instead of stringifying the ingredients, send them as a regular form field
+      formData.append('cookingTime', recipe.cookingTime); // Add cooking time
+
+      // Send ingredients
       recipe.ingredients.forEach((ingredient, index) => {
         formData.append(`ingredients[${index}][name]`, ingredient.name);
         formData.append(`ingredients[${index}][quantity]`, ingredient.quantity);
@@ -73,10 +76,8 @@ const AddRecipe = () => {
         formData.append('image', image as any);
       }
   
-      console.log(formData);
-  
-      // Sending data to backend using fetch (You can replace fetch with axios if needed)
-      const response = await fetch('http://192.168.1.64:3000/api/recipes/add', {
+      // Sending data to backend using fetch
+      const response = await fetch('http://192.168.0.101:3000/api/recipes/add', {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -100,6 +101,7 @@ const AddRecipe = () => {
         description: '',
         culturalOrigin: '',
         tags: '',
+        cookingTime: '', // Reset cooking time
         ingredients: [{ name: '', quantity: '' }],
       });
       setSelectedImage(null);
@@ -110,7 +112,6 @@ const AddRecipe = () => {
     }
   };
   
-
   return (
     <View style={styles.wrapper}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -151,10 +152,18 @@ const AddRecipe = () => {
           onChangeText={(text) => setRecipe({ ...recipe, culturalOrigin: text })}
           style={styles.input}
         />
+        
         <TextInput
           placeholder="Tags (comma separated)"
           value={recipe.tags}
           onChangeText={(text) => setRecipe({ ...recipe, tags: text })}
+          style={styles.input}
+        />
+
+        <TextInput
+          placeholder="Cooking Time (e.g., 30 min)"
+          value={recipe.cookingTime}
+          onChangeText={(text) => setRecipe({ ...recipe, cookingTime: text })}
           style={styles.input}
         />
 
