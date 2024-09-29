@@ -1,290 +1,139 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Button, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
-import * as ImagePicker from 'expo-image-picker'; // For image picking
-import { Ionicons } from '@expo/vector-icons'; // Icon for image picker
+import { View, Text, Button, Image, FlatList, TextInput, StyleSheet } from 'react-native';
 
-const AddRecipe = () => {
-  const [recipe, setRecipe] = useState<{
-    name: string;
-    description: string;
-    culturalOrigin: string;
-    tags: string;
-    cookingTime: string; // New state for cooking time
-    ingredients: { name: string; quantity: string }[];
-  }>({
-    name: '',
-    description: '',
-    culturalOrigin: '',
-    tags: '',
-    cookingTime: '', // Initialize cooking time
-    ingredients: [{ name: '', quantity: '' }],
-  });
-  
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+// Define the Recipe interface
+interface Recipe {
+  name: string;
+  imageUrl: string;
+  description: string;
+  culturalOrigin: string;
+  tags: string;
+  cookingTime: string;
+  ingredients: string[];
+}
 
-  // Handle ingredient input changes
-  const handleIngredientChange = (index: number, key: 'name' | 'quantity', value: string) => {
-    const newIngredients = [...recipe.ingredients];
-    newIngredients[index][key] = value;
-    setRecipe({ ...recipe, ingredients: newIngredients });
-  };
+const RecipeScreen: React.FC = () => {
+  const [recipes, setRecipes] = useState<Recipe[]>([]); // State for recipes
+  const [ingredients, setIngredients] = useState(""); // State for ingredient input
 
-  // Add more ingredients
-  const addIngredient = () => {
-    setRecipe({ ...recipe, ingredients: [...recipe.ingredients, { name: '', quantity: '' }] });
-  };
-
-  // Image picker function
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setSelectedImage(result.assets[0].uri);
-    }
-  };
-
-  const handleSubmit = async () => {
+  const handleGenerateRecipe = async () => {
+    const ingredientArray = ingredients.split(',').map(ingredient => ingredient.trim());
+    
     try {
-      const formData = new FormData();
-  
-      // Add recipe data
-      formData.append('name', recipe.name);
-      formData.append('description', recipe.description);
-      formData.append('culturalOrigin', recipe.culturalOrigin);
-      formData.append('tags', recipe.tags);
-      formData.append('cookingTime', recipe.cookingTime); // Add cooking time
-
-      // Send ingredients
-      recipe.ingredients.forEach((ingredient, index) => {
-        formData.append(`ingredients[${index}][name]`, ingredient.name);
-        formData.append(`ingredients[${index}][quantity]`, ingredient.quantity);
-      });
-  
-      // Add selected image if any
-      if (selectedImage) {
-        const imageName = selectedImage.split('/').pop(); // Get the image name from the URI
-        const image = {
-          uri: selectedImage,
-          name: imageName,
-          type: 'image/jpeg', // You can adjust this if you want to support other formats
-        };
-        formData.append('image', image as any);
-      }
-  
-      // Sending data to backend using fetch
-      const response = await fetch('http://192.168.0.101:3000/api/recipes/add', {
+      const response = await fetch('http://192.168.1.67:3000/api/recipes', {
         method: 'POST',
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
         },
-        body: formData,
+        body: JSON.stringify({
+          ingredients: ingredientArray,
+        }),
       });
-  
-      if (!response.ok) {
-        const errorText = await response.text(); // Read the response as text for better debugging
-        console.error('Response error:', errorText);
-        Alert.alert('Error', 'Failed to submit recipe. ' + errorText);
-        return;
-      }
-  
-      const result = await response.json(); // Parse JSON response
-      Alert.alert('Success', 'Recipe added successfully!');
-  
-      // Clear the form after successful submission
-      setRecipe({
-        name: '',
-        description: '',
-        culturalOrigin: '',
-        tags: '',
-        cookingTime: '', // Reset cooking time
-        ingredients: [{ name: '', quantity: '' }],
-      });
-      setSelectedImage(null);
-  
+
+      const data: Recipe[] = await response.json(); // Specify the type of the fetched data
+      setRecipes(data); // Update the recipes state with the fetched data
     } catch (error) {
-      console.error('Fetch error:', error);
-      Alert.alert('Error', 'Network request failed. Please check your connection and try again.');
+      console.error('Error fetching recipes:', error);
     }
   };
-  
+
+  // Render each recipe item
+  const renderRecipeItem = ({ item }: { item: Recipe }) => (
+    <View style={styles.recipeCard}>
+      <Image source={{ uri: item.imageUrl }} style={styles.recipeImage} />
+      <Text style={styles.recipeName}>{item.name}</Text>
+      <Text style={styles.recipeDescription}>{item.description}</Text>
+      <Text style={styles.recipeOrigin}>Origin: {item.culturalOrigin}</Text>
+      <Text style={styles.recipeTags}>Tags: {item.tags}</Text>
+      <Text style={styles.recipeCookingTime}>Cooking Time: {item.cookingTime}</Text>
+      <Text style={styles.recipeIngredients}>Ingredients:</Text>
+      {item.ingredients.map((ingredient, index) => (
+        <Text key={index} style={styles.ingredient}>
+          - {ingredient}
+        </Text>
+      ))}
+    </View>
+  );
+
   return (
-    <View style={styles.wrapper}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text style={styles.title}>Add New Recipe</Text>
-
-        {/* Image Upload */}
-        <TouchableOpacity style={styles.imageUploadContainer} onPress={pickImage}>
-          {selectedImage ? (
-            <Image source={{ uri: selectedImage }} style={styles.recipeImage} />
-          ) : (
-            <View style={styles.imagePlaceholder}>
-              <Ionicons name="image-outline" size={50} color="#ccc" />
-              <Text style={styles.imagePlaceholderText}>Upload Recipe Image</Text>
-            </View>
-          )}
-        </TouchableOpacity>
-
-        {/* Recipe Form */}
-        <TextInput
-          placeholder="Recipe Name"
-          value={recipe.name}
-          onChangeText={(text) => setRecipe({ ...recipe, name: text })}
-          style={styles.input}
-        />
-        
-        <TextInput
-          placeholder="Description"
-          value={recipe.description}
-          onChangeText={(text) => setRecipe({ ...recipe, description: text })}
-          style={[styles.input, styles.textArea]}
-          multiline={true}
-          numberOfLines={4}
-        />
-        
-        <TextInput
-          placeholder="Cultural Origin"
-          value={recipe.culturalOrigin}
-          onChangeText={(text) => setRecipe({ ...recipe, culturalOrigin: text })}
-          style={styles.input}
-        />
-        
-        <TextInput
-          placeholder="Tags (comma separated)"
-          value={recipe.tags}
-          onChangeText={(text) => setRecipe({ ...recipe, tags: text })}
-          style={styles.input}
-        />
-
-        <TextInput
-          placeholder="Cooking Time (e.g., 30 min)"
-          value={recipe.cookingTime}
-          onChangeText={(text) => setRecipe({ ...recipe, cookingTime: text })}
-          style={styles.input}
-        />
-
-        <Text style={styles.label}>Ingredients</Text>
-
-        {/* Ingredients List */}
-        {recipe.ingredients.map((ingredient, index) => (
-          <View key={index} style={styles.ingredientContainer}>
-            <TextInput
-              placeholder={`Ingredient ${index + 1} Name`}
-              value={ingredient.name}
-              onChangeText={(text) => handleIngredientChange(index, 'name', text)}
-              style={[styles.input, { flex: 1 }]}
-            />
-            <TextInput
-              placeholder="Quantity"
-              value={ingredient.quantity}
-              onChangeText={(text) => handleIngredientChange(index, 'quantity', text)}
-              style={[styles.input, { flex: 1 }]}
-            />
-          </View>
-        ))}
-
-        {/* Add Ingredient Button */}
-        <TouchableOpacity onPress={addIngredient} style={styles.addButton}>
-          <Text style={styles.addButtonText}>+ Add Ingredient</Text>
-        </TouchableOpacity>
-
-        {/* Submit Button */}
-        <Button title="Submit Recipe" onPress={handleSubmit} />
-      </ScrollView>
+    <View style={styles.container}>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter ingredients separated by commas"
+        value={ingredients}
+        onChangeText={setIngredients}
+      />
+      <Button title="Generate Recipe" onPress={handleGenerateRecipe} />
+      <FlatList
+        data={recipes}
+        renderItem={renderRecipeItem}
+        keyExtractor={(item) => item.name}
+        style={styles.recipeList}
+      />
     </View>
   );
 };
 
+// Styles for the component
 const styles = StyleSheet.create({
-  wrapper: {
+  container: {
     flex: 1,
+    padding: 16,
     backgroundColor: '#fff',
-  },
-  scrollContainer: {
-    padding: 20,
-    paddingBottom: 40, // Ensure extra space at the bottom
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 20,
   },
   input: {
+    height: 40,
+    borderColor: 'gray',
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 15,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 5,
-    backgroundColor: '#fff',
-  },
-  textArea: {
-    height: 100,
-    textAlignVertical: 'top',
-  },
-  imageUploadContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
     marginBottom: 20,
-    padding: 15,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 10,
-    backgroundColor: '#f9f9f9',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 5,
+    paddingHorizontal: 10,
   },
-  imagePlaceholder: {
-    alignItems: 'center',
+  recipeList: {
+    marginTop: 20,
+  },
+  recipeCard: {
+    marginBottom: 20,
+    padding: 16,
+    backgroundColor: '#f8f8f8',
+    borderRadius: 8,
+    elevation: 2,
   },
   recipeImage: {
-    width: 200,
-    height: 150,
-    borderRadius: 10,
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
   },
-  imagePlaceholderText: {
-    color: '#777',
-    fontSize: 16,
-    marginTop: 10,
-  },
-  label: {
+  recipeName: {
     fontSize: 18,
-    marginVertical: 10,
-  },
-  ingredientContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  addButton: {
-    backgroundColor: '#28a745',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginVertical: 15,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 5,
-  },
-  addButtonText: {
-    color: '#fff',
     fontWeight: 'bold',
-    marginLeft: 10,
+    marginVertical: 4,
+  },
+  recipeDescription: {
+    fontSize: 14,
+    color: '#666',
+  },
+  recipeOrigin: {
+    fontSize: 12,
+    color: '#999',
+  },
+  recipeTags: {
+    fontSize: 12,
+    color: '#999',
+  },
+  recipeCookingTime: {
+    fontSize: 12,
+    color: '#999',
+    marginBottom: 8,
+  },
+  recipeIngredients: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginTop: 8,
+  },
+  ingredient: {
+    fontSize: 12,
+    color: '#555',
   },
 });
 
-export default AddRecipe;
+export default RecipeScreen;

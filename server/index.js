@@ -31,7 +31,7 @@ app.use(cors({
 
 // Use Routers
 app.use('/api', authRouter);
-app.use('/api/recipes', recipeRoutes);
+app.use('/api', recipeRoutes);
 
 app.use('/api', categoryRoutes);
 

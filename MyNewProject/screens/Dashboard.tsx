@@ -6,7 +6,7 @@ import TopMenu from '../components/TopMenu';
 import RecipeCard from '../screens/RecipeCard';
 import CategoryCard from '../screens/CategoryCard';
 
-const BASE_URL = 'http://192.168.243.181:3000/api';
+const BASE_URL = 'http://192.168.1.64:3000/api';
 
 const Dashboard: React.FC = ({ navigation }: any) => {
   const [userData, setUserData] = useState<any>(null);

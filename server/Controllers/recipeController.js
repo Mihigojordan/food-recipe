@@ -1,100 +1,57 @@
-const Recipe = require('../Models/Recipe');
-const { Op, Sequelize } = require('sequelize'); // Import Sequelize operators
-require('dotenv').config();
+const axios = require('axios');
+const Recipe = require('../Models/Recipe'); // Adjust the path as needed
 
-// Add a new recipe
-const addRecipe = async(req, res) => {
-    console.log("searchRecipes function called"); // Confirm function call
-    const { query } = req.query;
-    console.log('Received Query:', query);
+const EDAMAM_APP_ID = "96668a25"; // Your Edamam Application ID
+const EDAMAM_APP_KEY = "6b36479652f2a371c3fa2c030af5f7dc"; // Your Edamam Application Key
+
+const getRecipeSuggestions = async(ingredients) => {
+    const url = "https://api.edamam.com/search";
+    const params = {
+        q: ingredients.join(','),
+        app_id: EDAMAM_APP_ID,
+        app_key: EDAMAM_APP_KEY,
+        from: 0,
+        to: 10,
+    };
+
     try {
-        const { name, description, culturalOrigin, tags, ingredients, cookingTime, } = req.body;
-        const imageUrl = req.file ? req.file.filename : null; // Get uploaded image
-
-        const newRecipe = await Recipe.create({
-            name,
-            description,
-            culturalOrigin,
-            tags,
-            ingredients,
-            cookingTime,
-            imageUrl,
-        });
-
-        res.status(201).json({ message: 'Recipe created successfully', recipe: newRecipe });
+        const response = await axios.get(url, { params });
+        return response.data.hits.map(hit => ({
+            name: hit.recipe.label,
+            description: hit.recipe.label, // You can customize this as needed
+            culturalOrigin: hit.recipe.cuisineType.join(', '), // This is an example; adjust as needed
+            tags: hit.recipe.dishType.join(', '), // Tags can be derived from dish types
+            ingredients: hit.recipe.ingredientLines,
+            imageUrl: hit.recipe.image,
+            cookingTime: hit.recipe.totalTime ? `${hit.recipe.totalTime} minutes` : 'N/A',
+        }));
     } catch (error) {
-        console.error('Error adding recipe:', error);
-        res.status(500).json({ message: 'Failed to create recipe' });
+        console.error("Error fetching recipes:", error);
+        throw new Error("Could not fetch recipes");
     }
 };
 
-// Get all recipes
-const getAllRecipes = async(req, res) => {
-    try {
-        const recipes = await Recipe.findAll();
-        res.status(200).json(recipes);
-    } catch (error) {
-        console.error('Error fetching recipes:', error);
-        res.status(500).json({ message: 'Server error' });
-    }
+const saveRecipes = async(recipes) => {
+    const promises = recipes.map(recipe => Recipe.create(recipe));
+    await Promise.all(promises);
 };
 
-// Get recipe by ID
-const getRecipeById = async(req, res) => {
-    try {
-        const recipe = await Recipe.findByPk(req.params.id);
+const fetchAndSaveRecipes = async(req, res) => {
+    const { ingredients } = req.body;
 
-        if (!recipe) {
-            return res.status(404).json({ message: 'Recipe not found' });
-        }
-
-        res.status(200).json(recipe);
-    } catch (error) {
-        console.error('Error fetching recipe by ID:', error);
-        res.status(500).json({ message: 'Server error' });
-    }
-};
-
-
-const searchRecipes = async(req, res) => {
-    const { query } = req.query;
-
-    if (!query) {
-        return res.status(400).json({ message: 'Query parameter is required' });
+    if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
+        return res.status(400).json({ error: "No valid ingredients provided." });
     }
 
     try {
-        const recipes = await Recipe.findAll({
-            where: {
-                [Op.or]: [{
-                        name: {
-                            [Op.like]: `%${query}%`
-                        }
-                    },
-                    {
-                        culturalOrigin: {
-                            [Op.like]: `%${query}%`
-                        }
-                    },
-                    Sequelize.where(
-                        Sequelize.json('ingredients'), {
-                            [Op.like]: `%${query}%`
-                        }
-                    )
-                ]
-            }
-        });
-
-        if (recipes.length === 0) {
-            return res.status(404).json({ message: 'No recipes found' });
-        }
-
-        res.status(200).json(recipes);
+        const recipeSuggestions = await getRecipeSuggestions(ingredients);
+        await saveRecipes(recipeSuggestions);
+        return res.status(200).json(recipeSuggestions);
     } catch (error) {
-        console.error('Error searching recipes:', error);
-        res.status(500).json({ message: 'Server error' });
+        return res.status(500).json({ error: error.message });
     }
 };
 
-
-module.exports = { addRecipe, getAllRecipes, getRecipeById, searchRecipes };
+module.exports = {
+    fetchAndSaveRecipes,
+};

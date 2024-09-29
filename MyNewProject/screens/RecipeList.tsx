@@ -16,7 +16,7 @@ const RecipeList = ({ navigation }: any) => {
 
   const fetchRecipes = async () => {
     try {
-      const response = await fetch('http://192.168.243.181:3000/api/recipes');
+      const response = await fetch('http://192.168.1.64:3000/api/recipes');
       if (!response.ok) {
         throw new Error('Failed to fetch recipes');
       }

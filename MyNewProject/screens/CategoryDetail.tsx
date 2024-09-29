@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import axios from 'axios';
 
-const BASE_URL = 'http://192.168.243.181:3000/api';
+const BASE_URL = 'http://192.168.1.64:3000/api';
 
 const CategoryDetail: React.FC<{ route: any }> = ({ route }) => {
   const { id } = route.params; // Get the category ID from params

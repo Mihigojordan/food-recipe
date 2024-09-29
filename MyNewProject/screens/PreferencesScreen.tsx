@@ -4,8 +4,8 @@ import axios from 'axios';
 import Toast from 'react-native-toast-message';
 import { useState, useEffect } from 'react';
 
-const apiUrl = 'http://192.168.243.181:3000/api/register'; 
-const preferencesUrl = 'http://192.168.243.181:3000/api/recipes'; // Ensure this returns cultural origins
+const apiUrl = 'http://192.168.1.64:3000/api/register'; 
+const preferencesUrl = 'http://192.168.1.64:3000/api/recipes'; // Ensure this returns cultural origins
 const { width } = Dimensions.get('window');
 
 export default function PreferencesScreen({ navigation }: any) {
