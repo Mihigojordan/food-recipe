@@ -11,7 +11,7 @@ export const fetchBanners = async () => {
     return data;
   };
   
-  export const fetchRecipes = async () => {
+  export const fetchRecipes = async (searchType: any) => {
     const response = await fetch('http://192.168.1.73:3000/api/recipes');
     const data = await response.json();
     return data;

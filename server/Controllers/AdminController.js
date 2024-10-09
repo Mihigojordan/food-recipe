@@ -14,6 +14,7 @@ const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: process.env.EMAIL_USER,
+
         pass: process.env.EMAIL_PASS,
     },
 });
@@ -100,8 +101,9 @@ const forgetPassword = async(req, res) => {
         const admin = await Admin.findOne({ where: { email } });
         if (!admin) return res.status(404).send('User not found');
 
-        const otp = Math.floor(100000 + Math.random() * 900000);
-        otpStore.set(email, { otp, expiresAt: Date.now() + 10 * 60 * 1000 });
+        const otp = Math.floor(10000 + Math.random() * 90000); // Generate a 5-digit OTP
+        otpStore.set(email, { otp, expiresAt: Date.now() + 30 * 60 * 1000 });
+        console.log(`Generated OTP for ${email}: ${otp}`); // Log generated OTP
 
         await transporter.sendMail({
             from: process.env.EMAIL_USER,
@@ -109,31 +111,63 @@ const forgetPassword = async(req, res) => {
             subject: 'Password Reset OTP',
             text: `Your OTP for password reset is ${otp}`,
         });
+        console.log(`Generated OTP for ${email}: ${otp}`); // Log generated OTP
+
 
         res.status(200).send('OTP sent to email');
     } catch (err) {
+        console.error(err); // Log the error for debugging
         res.status(500).send('Server error');
     }
 };
 
-// Verify OTP
 const verifyOtp = async(req, res) => {
     const { email, otp } = req.body;
 
     try {
         const storedOtp = otpStore.get(email);
-        if (!storedOtp || storedOtp.otp !== otp || storedOtp.expiresAt < Date.now()) {
-            otpStore.delete(email);
+        console.log(`Stored OTP: ${storedOtp ? storedOtp.otp : 'No OTP stored'}`); // Log stored OTP
+        console.log(`OTP provided for verification: ${otp}`); // Log OTP from request
+
+        if (!storedOtp || storedOtp.otp.toString() !== otp.toString() || storedOtp.expiresAt < Date.now()) {
+            otpStore.delete(email); // Remove expired or invalid OTP
             return res.status(400).send('Invalid or expired OTP');
         }
 
-        otpStore.delete(email);
+        otpStore.delete(email); // Delete OTP after successful verification
         res.status(200).send('OTP verified');
     } catch (err) {
+        console.error(err);
         res.status(500).send('Server error');
     }
 };
 
+// Reset Password
+const resetPassword = async(req, res) => {
+    const { email, newPassword } = req.body;
+
+    try {
+        const admin = await Admin.findOne({ where: { email } });
+        if (!admin) return res.status(404).send('User not found');
+
+        // Update the password in the database (ensure you hash the password)
+        admin.password = await hashPassword(newPassword); // Use a suitable hashing function
+        await admin.save();
+
+        res.status(200).send('Password reset successful');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server error');
+    }
+};
+
+// Utility function to hash passwords (you'll need to implement this)
+const hashPassword = async(password) => {
+    const bcrypt = require('bcryptjs');
+    const saltRounds = 10; // Define your salt rounds
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    return hashedPassword;
+};
 // Get User Profile
 const getProfile = async(req, res) => {
     try {
@@ -204,7 +238,9 @@ module.exports = {
     register,
     login,
     forgetPassword,
+    // Assuming this function is defined elsewhere in your application
     verifyOtp,
+    resetPassword,
     getProfile,
     updateProfile,
     logout,

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, Image } from 'react-native';
 import axios from 'axios';
 
-const BASE_URL = 'http://192.168.1.64:3000/api';
+const BASE_URL = 'http://192.168.0.102:3000/api';
 
 const MoreCategories: React.FC = () => {
   const [categories, setCategories] = useState<any[]>([]);
@@ -25,11 +25,11 @@ const MoreCategories: React.FC = () => {
       <Text style={styles.header}>More Categories</Text>
       <FlatList
         data={categories}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item, index) => index.toString()} // Use index since there might not be an ID
         renderItem={({ item }) => (
           <View style={styles.card}>
             <Image source={{ uri: item.imageUrl }} style={styles.image} />
-            <Text style={styles.title}>{item.name}</Text>
+            <Text style={styles.title}>{item.culturalOrigin}</Text> 
           </View>
         )}
       />

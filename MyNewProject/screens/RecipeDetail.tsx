@@ -12,7 +12,7 @@ interface Recipe {
   name: string;
   description: string;
   ingredients: Ingredient[] | null; // Ingredients should be an array of objects
-  imageUrl: string;
+  imageUrl: string | null; // Handle case where imageUrl can be null
 }
 
 const RecipeDetail = ({ route }: any) => {
@@ -22,7 +22,7 @@ const RecipeDetail = ({ route }: any) => {
   // Fetch the recipe details by ID
   const fetchRecipeDetails = async () => {
     try {
-      const response = await fetch(`http://192.168.243.181:3000/api/recipes/${recipeId}`);
+      const response = await fetch(`http://192.168.22.181:3000/api/recipes/${recipeId}`);
       if (!response.ok) {
         throw new Error('Failed to fetch recipe details');
       }
@@ -63,7 +63,7 @@ const RecipeDetail = ({ route }: any) => {
     if (recipe) {
       try {
         await Share.share({
-          message: `Check out this recipe: ${recipe.name}\n${recipe.imageUrl}`,
+          message: `Check out this recipe: ${recipe.name}\n${recipe.imageUrl || 'No image available.'}`,
         });
       } catch (error) {
         console.error('Error sharing recipe:', error);
@@ -75,8 +75,9 @@ const RecipeDetail = ({ route }: any) => {
 
   return (
     <View style={styles.container}>
+      {/* Adjusted image source to handle null imageUrl */}
       <Image 
-        source={{ uri: `http://192.168.1.64/react_native/clone/food-recipe/server/uploads/${recipe.imageUrl}` }} 
+        source={{ uri: recipe.imageUrl ? `http://192.168.1.64/react_native/clone/food-recipe/server/uploads/${recipe.imageUrl}` : 'https://via.placeholder.com/200' }} 
         style={styles.banner} 
       />
       <View style={styles.detailsContainer}>

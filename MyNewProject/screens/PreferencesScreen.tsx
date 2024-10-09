@@ -1,72 +1,47 @@
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import Toast from 'react-native-toast-message';
 import { useState, useEffect } from 'react';
+import Toast from 'react-native-toast-message';
+import { getUserData, getPreferences, submitPreferences } from '../Services/authService';
+import { NavigationProp } from '@react-navigation/native';
 
-const apiUrl = 'http://192.168.1.64:3000/api/register'; 
-const preferencesUrl = 'http://192.168.1.64:3000/api/recipes'; // Ensure this returns cultural origins
 const { width } = Dimensions.get('window');
 
-export default function PreferencesScreen({ navigation }: any) {
+export default function PreferencesScreen({ navigation }: { navigation: NavigationProp<any> }) {
   const [selectedPreferences, setSelectedPreferences] = useState<string[]>([]);
   const [preferencesList, setPreferencesList] = useState<string[]>([]);
-  const [userData, setUserData] = useState<{ username: string; email: string; password: string } | null>(null);
+  const [userData, setUserData] = useState<any>(null);
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchInitialData = async () => {
       try {
-        const data = await AsyncStorage.getItem('userData');
-        if (data) {
-          setUserData(JSON.parse(data));
-        }
+        const userData = await getUserData();
+        setUserData(userData);
+        const preferences = await getPreferences();
+        setPreferencesList(preferences as string[]);
       } catch (error) {
-        Toast.show({ type: 'error', text1: 'Failed to load user data' });
+        // Error handling is already done in the service layer
       }
     };
 
-    const fetchPreferences = async () => {
-      try {
-        const response = await axios.get(preferencesUrl);
-        if (response.data) {
-          // Assuming response.data contains an array of cultural origins
-          const culturalOrigins = response.data.map((item: any) => item.culturalOrigin); // Adjust based on your API structure
-          setPreferencesList(culturalOrigins);
-        }
-      } catch (error) {
-        Toast.show({ type: 'error', text1: 'Failed to load preferences' });
-      }
-    };
-
-    fetchUserData();
-    fetchPreferences();
+    fetchInitialData();
   }, []);
 
   const togglePreference = (preference: string) => {
     setSelectedPreferences((prev) =>
-      prev.includes(preference) ? prev.filter((item) => item !== preference) : [...prev, preference]
+      prev.includes(preference)
+        ? prev.filter((item) => item !== preference)
+        : [...new Set([...prev, preference])]
     );
   };
 
   const handleSubmitPreferences = async () => {
-    if (selectedPreferences.length < 4) {
-      Toast.show({ type: 'error', text1: 'Please select at least 4 cultural origins.' });
-      return;
-    }
-
-    if (!userData) {
-      Toast.show({ type: 'error', text1: 'User data not found' });
-      return;
-    }
-
     try {
-      await axios.post(apiUrl, { ...userData, preferences: selectedPreferences });
-      Toast.show({ type: 'success', text1: 'Registration completed successfully!' });
+      await submitPreferences(userData, selectedPreferences);
       setTimeout(() => {
         navigation.navigate('Login');
       }, 3000);
     } catch (error) {
-      Toast.show({ type: 'error', text1: 'Failed to complete registration' });
+      // Error handling is already done in the service layer
     }
   };
 
@@ -74,14 +49,14 @@ export default function PreferencesScreen({ navigation }: any) {
     <TouchableOpacity
       style={[
         styles.preferenceButton,
-        selectedPreferences.includes(item) && styles.selectedButton
+        selectedPreferences.includes(item) && styles.selectedButton,
       ]}
       onPress={() => togglePreference(item)}
     >
       <Text
         style={[
           styles.preferenceText,
-          selectedPreferences.includes(item) && styles.selectedText
+          selectedPreferences.includes(item) && styles.selectedText,
         ]}
       >
         {item}

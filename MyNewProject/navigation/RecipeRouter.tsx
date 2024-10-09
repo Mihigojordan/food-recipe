@@ -14,15 +14,24 @@ interface Recipe {
   imageUrl: string; // Make sure this matches your backend response
 }
 
-
 const RecipeRouter = () => {
-
   return (
     <Stack.Navigator>
-      <Stack.Screen name="AllRecipes" component={RecipeList} />
-      <Stack.Screen name="AddRecipe" component={AddRecipe} />
-      <Stack.Screen name="SearchResults" component={SearchResults} options={{ title: 'Search Results' }} />
- 
+      <Stack.Screen
+        name="AllRecipes"
+        component={AddRecipe}
+        options={{ headerShown:false }} // Hide header for AllRecipes
+      />
+      <Stack.Screen
+        name="AddRecipe"
+        component={AddRecipe}
+        options={{ headerShown: false }} // Hide header for AddRecipe
+      />
+      <Stack.Screen
+        name="SearchResults"
+        component={SearchResults}
+        options={{ headerShown: false }} // Hide header for SearchResults
+      />
     </Stack.Navigator>
   );
 };

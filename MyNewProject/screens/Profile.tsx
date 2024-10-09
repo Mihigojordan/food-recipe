@@ -1,43 +1,45 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Image, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator, ScrollView, Alert, TouchableOpacity } from 'react-native';
+import { fetchProfileData, logout } from '../Services/authService';
+import { useNavigation } from '@react-navigation/native'; // Import the navigation hook
 
-const Profile: React.FC = () => {
+const Profile: React.FC = ({ navigation }:any) => {
+  // const navigation = useNavigation(); // Get the navigation object using the hook
+
   const [profileData, setProfileData] = useState<{
-    name: string;
+    username: string;
     email: string;
-    avatar: string;
-    bio: string;
-    location: string;
   } | null>(null);
-  
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch profile data from the API
   useEffect(() => {
-            const fetchProfileData = async () => {
-              try {
-                const response = await fetch('http://192.168.243.181:3000/api/profile'); // Replace with your API endpoint
-                if (!response.ok) {
-                  throw new Error('Failed to fetch profile data');
-                }
-                const data = await response.json();
-                setProfileData(data);
-              } catch (err) {
-                if (err instanceof Error) {
-                  setError(err.message || 'Something went wrong');
-                  Alert.alert('Error', err.message);
-                } else {
-                  setError('Something went wrong');
-                  Alert.alert('Error', 'Something went wrong');
-                }
-              } finally {
-                setLoading(false);
-              }
-            };
+    const loadProfileData = async () => {
+      try {
+        const data = await fetchProfileData();
+        setProfileData(data);
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message || 'Something went wrong');
+          Alert.alert('Error', err.message);
+        } else {
+          setError('Something went wrong');
+          Alert.alert('Error', 'Something went wrong');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    fetchProfileData();
+    loadProfileData();
   }, []);
+
+  const handleLogout = async () => {
+    await logout(); // Call the logout function
+    Alert.alert('You are logged out now');
+    navigation.navigate('Login'); // Navigate to the Login screen
+  };
 
   if (loading) {
     return (
@@ -59,13 +61,21 @@ const Profile: React.FC = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {profileData && (
-        <>
-          {/* <Image source={{ uri: profileData.avatar }} style={styles.avatar} /> */}
-          <Text style={styles.name}>{profileData.name}</Text>
-          <Text style={styles.email}>{profileData.email}</Text>
-          {/* <Text style={styles.bio}>{profileData.bio}</Text> */}
-          {/* <Text style={styles.location}>Location: {profileData.location}</Text> */}
-        </>
+        <View style={styles.profileContainer}>
+          <View style={styles.infoContainer}>
+            <View style={styles.row}>
+              <Text style={styles.label}>Name:</Text>
+              <Text style={styles.value}>{profileData.username}</Text>
+            </View>
+            <View style={styles.row}>
+              <Text style={styles.label}>Email:</Text>
+              <Text style={styles.value}>{profileData.email}</Text>
+            </View>
+          </View>
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <Text style={styles.logoutText} onPress={() => navigation.navigate('Login')}>Logout</Text>
+          </TouchableOpacity>
+        </View>
       )}
     </ScrollView>
   );
@@ -79,33 +89,44 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#f8f8f8',
   },
-  avatar: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
+  profileContainer: {
+    width: '100%',
+    borderRadius: 10,
+    padding: 20,
+    backgroundColor: '#fff',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+  },
+  infoContainer: {
     marginBottom: 20,
-    borderWidth: 2,
-    borderColor: '#ccc',
   },
-  name: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: 10,
   },
-  email: {
-    fontSize: 18,
-    color: '#555',
-    marginBottom: 10,
-  },
-  bio: {
+  label: {
     fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 15,
     color: '#333',
   },
-  location: {
+  value: {
     fontSize: 16,
-    color: '#666',
+    fontWeight: 'bold',
+    color: '#555',
+  },
+  logoutButton: {
+    backgroundColor: '#ff4757',
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+  },
+  logoutText: {
+    color: '#fff',
+    fontSize: 16,
+    textAlign: 'center',
   },
   loadingContainer: {
     flex: 1,

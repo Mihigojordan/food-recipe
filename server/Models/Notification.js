@@ -1,18 +1,30 @@
-// models/Notification.js
 const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/config');
 
 class Notification extends Model {}
 
 Notification.init({
-    message: {
+    recipeName: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true,
     },
-    createdAt: {
+    recipeImage: {
+        type: DataTypes.STRING, // recipeImage can be NULL
+        allowNull: true,
+    },
+    scheduledTime: {
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
-    }
+        allowNull: true,
+    },
+    status: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: 'pending', // Default value is 'pending'
+    },
+    expoPushToken: {
+        type: DataTypes.STRING, // Add the expoPushToken field
+        allowNull: true, // Ensure that expoPushToken cannot be NULL
+    },
 }, {
     sequelize,
     modelName: 'Notification',

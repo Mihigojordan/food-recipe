@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions, ScrollView, ImageBackground, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions, ScrollView, ImageBackground, SafeAreaView, Alert } from 'react-native';
 import { Ionicons, FontAwesome, MaterialCommunityIcons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
-import axios from 'axios';
 import { Checkbox } from 'react-native-paper';
+import { login } from '@/Services/authService';
 
-const apiUrl = 'http://192.168.1.67:3000/api/login';
+const apiUrl = 'http://192.168.0.102:3000/api/login';
 
 const { width, height } = Dimensions.get('window');
 
@@ -13,28 +13,22 @@ export default function LoginScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [checked, setChecked] = useState(false); // Remember me checkbox
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Handle login API request
   const handleLogin = async () => {
+    console.log('log');
+    setLoading(true);
+    setError(null);
     try {
-      const response = await axios.post(apiUrl, { email, password });
-
-      Toast.show({
-        type: 'success',
-        text1: 'Login Successful'
-      });
-
-      if (response.status === 200) {
-        setTimeout(() => navigation.navigate('Dashboard'), 2000); // Navigate to Home page after login
-      }
-      console.log('yes');
+      const userData = await login(email, password);
+      console.log(userData);
+      Alert.alert('Login Success', ` you are Welcome to our app `);
+      navigation.navigate('Dashboard'); // Navigate to the home screen after login
     } catch (error) {
-      Toast.show({
-        type: 'error',
-        text1: 'Login Failed',
-      });
-      
-      console.log(error);
+      setError('Invalid email or password');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -88,6 +82,10 @@ export default function LoginScreen({ navigation }: any) {
             <Text style={styles.registerButtonText}>Login</Text>
           </TouchableOpacity>
 
+          <Text style={styles.forgotPasswordLink} onPress={() => navigation.navigate('ForgotPassword')}>
+            Forgot Password?
+          </Text>
+
           <View style={styles.signUpSection}>
             <View style={styles.line} />
             <Text style={styles.signUpText}>Or login with</Text>
@@ -113,7 +111,7 @@ export default function LoginScreen({ navigation }: any) {
             </Text>
           </Text>
         </View>
-        <Toast /> 
+        <Toast />
       </ScrollView>
     </SafeAreaView>
   );
@@ -138,8 +136,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     backgroundColor: '#fdb15a',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
   },
   helloText: {
     fontSize: 36,
@@ -159,8 +155,8 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 20,
     backgroundColor: 'white',
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.2,
@@ -210,6 +206,12 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  forgotPasswordLink: {
+    color: '#fdb15a',
+    textAlign: 'center',
+    marginBottom: 20,
+    textDecorationLine: 'underline',
   },
   signUpSection: {
     flexDirection: 'row',

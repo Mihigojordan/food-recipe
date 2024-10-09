@@ -1,57 +1,43 @@
-// controllers/categoryController.js
-const Category = require('../Models/Category');
+const Recipe = require('../Models/Recipe'); // Ensure you import the Recipe model
 
-// Add a new category
-const addCategory = async(req, res) => {
-    const { name, description, type, dietaryPreferences } = req.body;
-    const imageUrl = req.file ? req.file.filename : null; // Get the uploaded image filename
-
+// Get all unique cultural origins and image URLs from the recipes table
+const getAllCulturalOrigins = async(req, res) => {
     try {
-        const newCategory = await Category.create({
-            name,
-            description,
-            type,
-            dietaryPreferences,
-            imageUrl,
+        // Fetch unique cultural origins and their corresponding image URLs from the recipes table
+        const recipes = await Recipe.findAll({
+            attributes: ['culturalOrigin', 'imageUrl'], // Select culturalOrigin and imageUrl
+            group: ['culturalOrigin', 'imageUrl'], // Group by both culturalOrigin and imageUrl to get unique combinations
         });
 
-        res.status(201).json({
-            message: 'Category created successfully',
-            category: newCategory,
-        });
-    } catch (error) {
-        console.error('Error adding category:', error);
-        res.status(500).json({ message: 'Failed to create category', error: error.message });
-    }
-};
+        // Map the results to extract cultural origins and image URLs
+        const culturalOrigins = recipes.map(recipe => ({
+            culturalOrigin: recipe.culturalOrigin,
+            imageUrl: recipe.imageUrl,
+        }));
 
-// Get all categories
-const getAllCategories = async(req, res) => {
-    try {
-        const categories = await Category.findAll();
-        res.status(200).json(categories);
+        res.status(200).json(culturalOrigins);
     } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error('Error fetching cultural origins:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };
 
-// Get a category by ID
-const getCategoryById = async(req, res) => {
-    const { id } = req.params; // Get the category ID from the request parameters
+// Get a recipe by ID (if needed in future)
+const getRecipeById = async(req, res) => {
+    const { id } = req.params; // Get the recipe ID from the request parameters
 
     try {
-        const category = await Category.findOne({ where: { id } });
+        const recipe = await Recipe.findOne({ where: { id } });
 
-        if (!category) {
-            return res.status(404).json({ message: 'Category not found' });
+        if (!recipe) {
+            return res.status(404).json({ message: 'Recipe not found' });
         }
 
-        res.status(200).json(category);
+        res.status(200).json(recipe);
     } catch (error) {
-        console.error('Error fetching category by ID:', error);
+        console.error('Error fetching recipe by ID:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };
 
-module.exports = { addCategory, getAllCategories, getCategoryById };
+module.exports = { getAllCulturalOrigins, getRecipeById };

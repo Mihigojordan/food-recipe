@@ -4,6 +4,7 @@ const sequelize = require('./config/config');
 const authRouter = require('./Routers/AdminRouter');
 const recipeRoutes = require('./Routers/recipeRoutes');
 const categoryRoutes = require('./Routers/categoryRoutes');
+const alarmRoutes = require('./Routers/alarmRoutes');
 
 // const alarmRoutes = require('./Routers/alarmRoutes');
 const { checkAlarms } = require('./Controllers/alarmController');
@@ -34,6 +35,8 @@ app.use('/api', authRouter);
 app.use('/api', recipeRoutes);
 
 app.use('/api', categoryRoutes);
+app.use('/api', alarmRoutes);
+
 
 
 // Test Database Connection

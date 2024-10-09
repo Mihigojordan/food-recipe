@@ -11,24 +11,16 @@ const TopMenu = ({ username, greeting, hasNotifications }: any) => {
     <View style={styles.container}>
 
       <View style={styles.leftSection}>
-        <TouchableOpacity style={styles.menuButton}>
-          <Ionicons name="menu" size={28} color="black" /> 
-        </TouchableOpacity>
+  
 
         
         <View style={styles.greetingContainer}>
           <Ionicons name={iconName} size={20} color={iconColor} /> 
           <Text style={styles.greetingText}>{greeting},</Text>
-          <Text style={styles.username}>{username}</Text>
+            <Text style={styles.username}>{username}</Text>
         </View>
       </View>
-     <View style={styles.notificationContainer}>
-        <TouchableOpacity>
-          <Ionicons name="notifications-outline" size={28} color="black" />
-      
-          {hasNotifications && <View style={styles.notificationDot} />}
-        </TouchableOpacity>
-      </View>
+    
     </View>
   );
 };

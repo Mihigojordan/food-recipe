@@ -8,7 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'; // For sav
 
 
 
-const apiUrl = 'http://192.168.243.181:3000/api/register'; // Use your local IP address here
+const apiUrl = 'http://192.168.22.181:3000/api/register'; // Use your local IP address here
 
 const { width, height } = Dimensions.get('window');
 
@@ -170,8 +170,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     backgroundColor:'#fdb15a',
-borderTopLeftRadius:20,
-borderTopRightRadius:20,
+// borderTopLeftRadius:20,
+// borderTopRightRadius:20,
   },
   helloText: {
     fontSize: 36,
@@ -194,8 +194,8 @@ borderTopRightRadius:20,
     borderRadius: 0, // Remove rounded corners
     elevation: 0, // Remove shadow for Android
     marginTop: 0, // Remove overlap with the banner
-    borderTopLeftRadius: 10, // Top left corner radius
-    borderTopRightRadius: 10, // Top right corner radius
+    borderTopLeftRadius: 15, // Top left corner radius
+    borderTopRightRadius: 15, // Top right corner radius
     borderColor:'red',
 
   

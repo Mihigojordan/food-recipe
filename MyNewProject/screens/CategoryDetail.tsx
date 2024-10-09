@@ -1,40 +1,41 @@
-// screens/CategoryDetail.tsx
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Image } from 'react-native';
 import axios from 'axios';
 
-const BASE_URL = 'http://192.168.1.64:3000/api';
+const BASE_URL = 'http://192.168.0.102:3000/api';
 
-const CategoryDetail: React.FC<{ route: any }> = ({ route }) => {
-  const { id } = route.params; // Get the category ID from params
-  const [category, setCategory] = useState<any>(null);
+const MoreCategories: React.FC = () => {
+  const [categories, setCategories] = useState<any[]>([]);
 
-  const fetchCategoryDetail = async () => {
+  const fetchCategories = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/categories/${id}`);
-      setCategory(response.data);
+      const response = await axios.get(`${BASE_URL}/categories`);
+      setCategories(response.data);
+      console.log(response.data)
     } catch (error) {
-      console.error("Error fetching category detail:", error);
+      console.error("Error fetching categories:", error);
     }
   };
 
   useEffect(() => {
-    fetchCategoryDetail();
+    fetchCategories();
   }, []);
 
   return (
-    <ScrollView style={styles.container}>
-      {category ? (
-        <>
-          <Text style={styles.title}>{category.name}</Text>
-          <Image source={{ uri: `http://192.168.0.101:3000/uploads/${category.imageUrl}` }} style={styles.image} />
-          <Text style={styles.description}>{category.description}</Text>
-          {/* Add more details as needed */}
-        </>
-      ) : (
-        <Text>Loading...</Text>
-      )}
-    </ScrollView>
+    <View style={styles.container}>
+      <Text style={styles.header}>More Categories</Text>
+      <FlatList
+        data={categories}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <View style={styles.card}>
+            {/* Accessing imageUrl correctly */}
+            <Image source={{ uri: item.imageUrl }} style={styles.image} />
+            <Text style={styles.title}>{item.name}</Text>
+          </View>
+        )}
+      />
+    </View>
   );
 };
 
@@ -42,23 +43,34 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
   },
-  title: {
+  header: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 20,
+  },
+  card: {
+    marginBottom: 15,
+    borderRadius: 8,
+    overflow: 'hidden',
+    backgroundColor: '#fff',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
   },
   image: {
     width: '100%',
-    height: 200,
+    height: 100,
     resizeMode: 'cover',
-    marginBottom: 10,
   },
-  description: {
-    fontSize: 16,
-    color: '#333',
+  title: {
+    padding: 10,
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 
-export default CategoryDetail;
+export default MoreCategories;

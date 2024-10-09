@@ -1,28 +1,28 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet, Text } from 'react-native';
+import { View, Text, StyleSheet, Button, Alert } from 'react-native';
 import axios from 'axios';
-import RecipeCard from '../screens/RecipeCard';
+import { fetchRecipes } from '@/api/api';
 
-
-const BASE_URL = 'http://192.168.1.64:3000/api'; // API base URL
+const BASE_URL = 'http://192.168.22.181:3000/api'; // API base URL
 
 const SearchResults: React.FC = ({ route }: any) => {
   const { query } = route.params; // Get the search query from navigation
   const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true); // Added loading state
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const searchRecipes = async () => {
+    const fetchRecipes = async () => {
       setLoading(true);
-      console.log('Search Query:', query); // Log the query parameter
+      console.log('Search Query:', query); // Log the query
       try {
-        const response = await axios.get(`${BASE_URL}/recipes/search`, {
-          params: { query },
+        // Fetching recipes based on the search query
+        const response = await axios.post(`${BASE_URL}/Recipes`, {
+          query: query,
         });
-        setSearchResults(response.data);
+        setSearchResults(response.data); // Set search results to state
       } catch (error) {
-        console.error('Error searching recipes:', error);
+        console.error('Error fetching recipes:', error);
         setError('Failed to fetch search results');
       } finally {
         setLoading(false);
@@ -31,7 +31,7 @@ const SearchResults: React.FC = ({ route }: any) => {
 
     // Check if the query parameter exists and is valid
     if (query) {
-      searchRecipes();
+      fetchRecipes(); // Call the fetch function
     } else {
       setError('Query parameter is required');
       setLoading(false);
@@ -50,38 +50,32 @@ const SearchResults: React.FC = ({ route }: any) => {
     return (
       <View style={styles.errorContainer}>
         <Text>{error}</Text>
+        {/* <Button title="Retry" onPress={() => fetchRecipes(searchType)} /> */}
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <ScrollView>
-        <View style={styles.recipeList}>
-          {searchResults.length > 0 ? (
-            searchResults.map((recipe) => (
-              <RecipeCard key={recipe.id} recipe={recipe} />
-            ))
-          ) : (
-            <Text>No recipes found</Text>
-          )}
-        </View>
-      </ScrollView>
+    <View style={styles.resultsContainer}>
+      {searchResults.length > 0 ? (
+        searchResults.map((recipe, index) => (
+          <View key={index} style={styles.recipeCard}>
+            <Text>{recipe.name}</Text>
+            <Text>{recipe.description}</Text>
+            <Text>{recipe.culturalOrigin}</Text>
+            <Text>{recipe.tags}</Text>
+            <Text>Ingredients: {recipe.ingredients.join(', ')}</Text>
+            <Text>Cooking Time: {recipe.cookingTime}</Text>
+          </View>
+        ))
+      ) : (
+        <Text>No results found for your search.</Text>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-  recipeList: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -91,6 +85,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  resultsContainer: {
+    padding: 20,
+  },
+  recipeCard: {
+    marginBottom: 15,
+    padding: 15,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
   },
 });
 
