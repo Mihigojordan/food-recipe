@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 
-const BASE_URL = 'http://192.168.0.105:3000/api'; // API base URL
+const BASE_URL = 'https://fair-actors-cry.loca.lt/api'; // API base URL
 
 // Login Function
 export const login = async (email: string, password: string) => {

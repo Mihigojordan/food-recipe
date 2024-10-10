@@ -21,11 +21,13 @@ app.use(express.urlencoded({ extended: true }));
 
 // Apply the rate limiter to all requests
 
+app.set('trust proxy', false);
+
 app.use(express.urlencoded({ extended: true }));
 
 app.use(limiter);
 app.use(cors({
-    origin: "http://localhost:8081",
+    origin: '*',
     credentials: true,
 }));
 
@@ -62,7 +64,7 @@ app.use((err, req, res, next) => {
     res.status(500).send('Something went wrong!');
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
