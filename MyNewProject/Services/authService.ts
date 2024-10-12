@@ -70,7 +70,7 @@ export const submitPreferences = async (userData: any, selectedPreferences: stri
     if (response.status === 201) {
       Toast.show({ type: 'success', text1: 'Registration completed successfully!' });
     } else {
-      throw new Error('Failed to complete registration');
+      throw new Error('Email already exist');
     }
   } catch (error) {
     Toast.show({ type: 'error', text1: 'Failed to complete registration' });

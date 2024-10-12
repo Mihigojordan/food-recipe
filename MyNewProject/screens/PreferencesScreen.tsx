@@ -66,7 +66,8 @@ export default function PreferencesScreen({ navigation }: { navigation: Navigati
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Choose Your Cultural Origins</Text>
+      <Text style={styles.title}>Please Choose 4  Your Cultural Origins</Text>
+      
       <FlatList
         data={preferencesList}
         renderItem={renderPreferenceItem}

@@ -59,7 +59,7 @@ export default function RegisterScreen({ navigation }: any) {
     } catch (error) {
       Toast.show({
         type: 'error',
-        text1: 'Registration Failed',
+        text1: 'Email already exists',
         topOffset: 20,
       });
     }
