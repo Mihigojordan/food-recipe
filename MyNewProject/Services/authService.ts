@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 
-const BASE_URL = 'https://wide-socks-agree.loca.lt/api'; // API base URL
+const BASE_URL = 'http://192.168.63.181:3001/api'; // API base URL
 
 // Login Function
 export const login = async (email: string, password: string) => {
@@ -147,6 +147,11 @@ export const fetchNotifications = async () => {
   }
 };
 
+export const deleteNotification = async (id: number) => {
+  const response = await axios.delete(`${BASE_URL}/notifications/${id}`);
+  return response.data;
+};
+
 export const setAlarm = async (data: { title: string; body: string; scheduleTime: string; recipeName: string; recipeImage: string; expoPushToken: string | null; }) => {
   try {
     const response = await axios.post(`${BASE_URL}/alarm`, data);
@@ -192,17 +197,17 @@ const clearUserData = async () => {
   }
 };
 
-  const AuthService = {
-    sendOtp: async (email: any) => {
-      return await axios.post(`${BASE_URL}/forget-password`, { email });
-    },
-    verifyOtp: async (email: any, otpString: any) => { // Changed 'otp' to 'otpString'
-      return await axios.post(`${BASE_URL}/verify-otp`, { email, otp: otpString }); // Use 'otpString' here
-      console.log(otpString)
-    },
-    resetPassword: async (email: any, newPassword: any) => {
-      return await axios.post(`${BASE_URL}/reset-password`, { email, newPassword });
-    },
-  };
+const AuthService = {
+  sendOtp: async (email: any) => {
+    return await axios.post(`${BASE_URL}/forget-password`, { email });
+  },
+  verifyOtp: async (email: any, otpString: any) => { // Changed 'otp' to 'otpString'
+    return await axios.post(`${BASE_URL}/verify-otp`, { email, otp: otpString }); // Use 'otpString' here
+    console.log(otpString)
+  },
+  resetPassword: async (email: any, newPassword: any) => {
+    return await axios.post(`${BASE_URL}/reset-password`, { email, newPassword });
+  },
+};
 
 export default AuthService;

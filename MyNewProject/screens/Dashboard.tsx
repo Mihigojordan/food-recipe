@@ -111,13 +111,13 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     marginBottom: 20,
-    height: 220, // Increased height for the banner
+    height: 150, // Increased height for the banner
     flexDirection: 'row', // Flex direction to align image and text
     alignItems: 'center', // Center content vertically
   },
   bannerImage: {
     width: 200, // Increased width for the banner image
-    height: 220, // Increased height for the banner image
+    height: 150, // Increased height for the banner image
     marginRight: -20, // Space between image and text 
   },
   bannerTextContainer: {

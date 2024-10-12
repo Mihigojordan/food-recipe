@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Button, Share } from 'react-native';
-import { fetchNotifications } from '../Services/authService'; // Import your fetchNotifications service
+import { View, Text, StyleSheet, FlatList, Button, Share, Alert } from 'react-native';
+import { fetchNotifications, deleteNotification } from '../Services/authService'; // Import delete service
 
 const Alarm: React.FC = () => {
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -18,6 +18,31 @@ const Alarm: React.FC = () => {
     loadNotifications();
   }, []);
 
+  const handleDelete = (id: number) => {
+    Alert.alert(
+      'Delete Notification',
+      'Are you sure you want to delete this notification?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Yes',
+          onPress: async () => {
+            try {
+              await deleteNotification(id); // Call delete service
+              setNotifications((prevNotifications) =>
+                prevNotifications.filter((notification) => notification.id !== id)
+              ); // Update UI
+              console.log('Notification deleted successfully');
+            } catch (error) {
+              console.error('Error deleting notification:', error);
+            }
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   const renderNotification = ({ item }: { item: any }) => (
     <View style={styles.card}>
       <Text style={styles.cardTitle}>It's time to take this:</Text>
@@ -25,7 +50,10 @@ const Alarm: React.FC = () => {
       <Text style={styles.scheduledTime}>
         Scheduled Time: {new Date(item.scheduledTime).toLocaleString()}
       </Text>
-      <Button color="#FFA500" title="Share" onPress={() => shareScheduledTime(item)} />
+      <View style={styles.buttonGroup}>
+        <Button color="#FFA500" title="Share" onPress={() => shareScheduledTime(item)} />
+        <Button color="#FF0000" title="Delete" onPress={() => handleDelete(item.id)} />
+      </View>
     </View>
   );
 
@@ -97,6 +125,10 @@ const styles = StyleSheet.create({
   scheduledTime: {
     fontSize: 14,
     marginBottom: 10,
+  },
+  buttonGroup: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 });
 

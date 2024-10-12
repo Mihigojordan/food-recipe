@@ -53,15 +53,15 @@ const getRecipeSuggestions = async(ingredients) => {
                 imageUrl: recipe.image,
                 cookingTime: recipe.totalTime ? `${recipe.totalTime} minutes` : 'N/A',
                 balancedDiet: {
-                    carbsPercentage: `${carbsPercentage}%`,
-                    fatPercentage: `${fatPercentage}%`,
-                    proteinPercentage: `${proteinPercentage}%`,
+                    carbsPercentage: `${carbsPercentage}g`,
+                    fatPercentage: `${fatPercentage}g`,
+                    proteinPercentage: `${proteinPercentage}g`,
                 },
                 totalCalories: totalCalories ? `${totalCalories.toFixed(2)} kcal` : 'N/A',
                 dietCategories: {
                     energyGiving: `${energyGivingPercentage}%`,
-                    bodyBuilding: `${bodyBuildingPercentage}%`,
-                    bodyProtective: `${bodyProtectivePercentage}%`
+                    bodyBuilding: `${bodyBuildingPercentage}g`,
+                    bodyProtective: `${bodyProtectivePercentage}mg `
                 }
             };
         });
@@ -146,14 +146,14 @@ const getAllRecipes = async(req, res) => {
                 cookingTime: recipe.totalTime ? `${recipe.totalTime} minutes` : 'N/A',
                 totalCalories: totalCalories ? `${totalCalories.toFixed(2)} kcal` : 'N/A',
                 balancedDiet: {
-                    carbsPercentage: `${carbsPercentage}%`,
-                    fatPercentage: `${fatPercentage}%`,
-                    proteinPercentage: `${proteinPercentage}%`,
+                    carbsPercentage: `${carbsPercentage}g`,
+                    fatPercentage: `${fatPercentage}g`,
+                    proteinPercentage: `${proteinPercentage}g`,
                 },
                 dietCategories: {
                     energyGiving: `${energyGivingPercentage}%`,
-                    bodyBuilding: `${bodyBuildingPercentage}%`,
-                    bodyProtective: `${bodyProtectivePercentage}%`
+                    bodyBuilding: `${bodyBuildingPercentage}g`,
+                    bodyProtective: `${bodyProtectivePercentage}mg`
                 }
             };
         });
@@ -165,9 +165,24 @@ const getAllRecipes = async(req, res) => {
     }
 };
 
+// Delete Recipe by ID
+const deleteRecipe = async(req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedRecipe = await Recipe.findByIdAndDelete(id);
+        if (!deletedRecipe) {
+            return res.status(404).json({ message: "Recipe not found" });
+        }
+        res.status(200).json({ message: "Recipe deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ error: "Error deleting recipe" });
+    }
+};
+
 
 module.exports = {
     fetchAndSaveRecipes,
     getAllRecipes,
+    deleteRecipe,
 
 };

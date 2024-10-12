@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     },
     link: {
         textAlign: 'center',
-        color: '#007BFF',
+        color: '#FF8C00',
         marginTop: 16,
     },
 });

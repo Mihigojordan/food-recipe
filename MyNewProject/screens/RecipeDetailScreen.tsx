@@ -147,8 +147,8 @@ const RecipeDetail: React.FC<RecipeDetailScreenProps> = ({ route, navigation }) 
 
         // Prepare the data to be sent to the service
         const alarmData = {
-          title: 'Recipe Reminder',
-          body: `Time to cook: ${recipe.name} - ${recipe.cookingTime}`,
+          title: 'recipe recomendation app',
+          body: `Time to prepare your meal : ${recipe.name} - ${recipe.cookingTime}`,
           scheduleTime: scheduledDate.toISOString(),
           recipeName: recipe.name,
           recipeImage: recipe.imageUrl,
@@ -161,9 +161,9 @@ const RecipeDetail: React.FC<RecipeDetailScreenProps> = ({ route, navigation }) 
         if (response.status === 200) {
           await Notifications.scheduleNotificationAsync({
             content: {
-              title: 'Recipe Reminder',
-              body: `Time to cook: ${recipe.name} - ${recipe.cookingTime}`,
-              sound: 'default',
+              title: 'recipe recomendation app',
+               body: `Time to prepare your meal : ${recipe.name} - ${recipe.cookingTime}`,
+               sound: 'default',
             },
             trigger: {
               seconds: Math.floor((scheduledDate.getTime() - Date.now()) / 1000),

@@ -19,11 +19,28 @@ export default function RegisterScreen({ navigation }: any) {
   const [checked, setChecked] = useState(false);
 
   const handleRegister = async () => {
+
+    const validatePassword = (password: string) => {
+      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      return regex.test(password);
+    };
+    
     if (!checked) {
       Toast.show({
         type: 'error',
         text1: 'Error',
         text2: 'Please accept the terms and conditions.',
+        topOffset: 20,
+      });
+      return;
+    }
+
+    // Check if password is valid
+    if (!validatePassword(password)) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Password must be at least 8 characters long and include uppercase, lowercase, numbers, and special characters.',
         topOffset: 20,
       });
       return;
