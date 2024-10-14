@@ -3,11 +3,9 @@ const express = require('express');
 const sequelize = require('./config/config');
 const authRouter = require('./Routers/AdminRouter');
 const recipeRoutes = require('./Routers/recipeRoutes');
-const categoryRoutes = require('./Routers/categoryRoutes');
 const alarmRoutes = require('./Routers/alarmRoutes');
 
-// const alarmRoutes = require('./Routers/alarmRoutes');
-const { checkAlarms } = require('./Controllers/alarmController');
+
 const cron = require('node-cron');
 const limiter = require('./Middleware/rateLimiter');
 const cookieParser = require("cookie-parser");
@@ -21,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Apply the rate limiter to all requests
 
-app.set('trust proxy', false);
+// app.set('trust proxy', false);
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -35,8 +33,6 @@ app.use(cors({
 // Use Routers
 app.use('/api', authRouter);
 app.use('/api', recipeRoutes);
-
-app.use('/api', categoryRoutes);
 app.use('/api', alarmRoutes);
 
 

@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 
-const BASE_URL = 'http://192.168.63.181:3001/api'; // API base URL
+const BASE_URL = 'http://192.168.0.101:3001/api'; // API base URL
 
 // Login Function
 export const login = async (email: string, password: string) => {
@@ -14,7 +14,7 @@ export const login = async (email: string, password: string) => {
       throw new Error('Invalid response from the server');
     }
   } catch (error) {
-    Toast.show({ type: 'error', text1: 'Login failed' });
+    Toast.show({ type: 'error', text1: 'User not found' });
     throw new Error('Failed to login');
   }
 };
@@ -134,17 +134,18 @@ export const retriveRecipes = async (ingredients: string[]): Promise<Recipe[]> =
   }
 };
 
-export const fetchNotifications = async () => {
-  try {
-    const response = await axios.get(`${BASE_URL}/notifications`);
-    if (response.status === 200) {
-      return response.data; // Return notifications data
-    }
-    throw new Error('Failed to load notifications');
-  } catch (error) {
-    Toast.show({ type: 'error', text1: 'Failed to load notifications' });
-    throw error; // Re-throw error to be handled in the Alarm component
-  }
+export const fetchNotifications = () => {
+  return axios.get(`${BASE_URL}/notifications`)
+    .then(response => {
+      if (response.status === 200) {
+        return response.data; // Return notifications data
+      }
+      throw new Error('Failed to load notifications');
+    })
+    .catch(error => {
+      Toast.show({ type: 'error', text1: 'Failed to load notifications' });
+      throw error; // Re-throw error to be handled in the Alarm component
+    });
 };
 
 export const deleteNotification = async (id: number) => {

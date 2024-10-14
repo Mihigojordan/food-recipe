@@ -33,6 +33,10 @@ const Alarm: React.FC = () => {
                 prevNotifications.filter((notification) => notification.id !== id)
               ); // Update UI
               console.log('Notification deleted successfully');
+              Alert.alert(
+                'notification deleted successfully',
+              )
+
             } catch (error) {
               console.error('Error deleting notification:', error);
             }
@@ -45,7 +49,7 @@ const Alarm: React.FC = () => {
 
   const renderNotification = ({ item }: { item: any }) => (
     <View style={styles.card}>
-      <Text style={styles.cardTitle}>It's time to take this:</Text>
+      <Text style={styles.cardTitle}>It's time to prepare your meal :</Text>
       <Text style={styles.recipeName}>{item.recipeName}</Text>
       <Text style={styles.scheduledTime}>
         Scheduled Time: {new Date(item.scheduledTime).toLocaleString()}
@@ -106,7 +110,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: {
-      width: 0,
+      width: 4,
       height: 2,
     },
     shadowOpacity: 0.2,
@@ -129,7 +133,16 @@ const styles = StyleSheet.create({
   buttonGroup: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    width: '100%',
   },
+  button: {
+
+    // backgroundColor: '#1e90ff',
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    minWidth: 100,
+  }
 });
 
 export default Alarm;

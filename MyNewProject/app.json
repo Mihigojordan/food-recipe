@@ -1,29 +1,37 @@
 {
     "expo": {
-        "name": "MyNewProject",
-        "slug": "MyNewProject",
+        "name": "Recipe App Generator",
+        "slug": "RecipeAppGenerator",
         "version": "1.0.0",
         "orientation": "portrait",
-        "icon": "./assets/images/icon.png",
+        "icon": "./assets/images/large.png",
         "scheme": "myapp",
         "userInterfaceStyle": "automatic",
         "splash": {
-            "image": "./assets/images/splash.png",
+            "image": "./assets/images/large.png",
             "resizeMode": "contain",
-            "backgroundColor": "#ffffff"
+            "backgroundColor": "#fdb15a"
         },
         "ios": {
-            "supportsTablet": true
+            "supportsTablet": true,
+            "bundleIdentifier": "com.mihigojordan.MyNewProject",
+            "buildNumber": "1.0.0"
         },
         "android": {
-            "adaptiveIcon": {
-                "foregroundImage": "./assets/images/adaptive-icon.png",
-                "backgroundColor": "#ffffff"
-            },
             "package": "com.mihigojordan.MyNewProject",
-            "compileSdkVersion": 33,
-            "targetSdkVersion": 33,
-            "minSdkVersion": 21
+            "versionCode": 1,
+            "permissions": [
+                "CAMERA",
+                "READ_EXTERNAL_STORAGE",
+                "WRITE_EXTERNAL_STORAGE",
+                "INTERNET"
+
+            ],
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/images/large.png",
+
+                "backgroundColor": "#fdb15a"
+            }
         },
         "web": {
             "bundler": "metro",
@@ -40,6 +48,15 @@
             "eas": {
                 "projectId": "85a284b0-eb35-42a5-a4ed-5f5a37659808"
             }
+        },
+        "updates": {
+            "fallbackToCacheTimeout": 0
+        },
+        "assetBundlePatterns": [
+            "**/*"
+        ],
+        "runtimeVersion": {
+            "policy": "sdkVersion"
         }
     }
 }

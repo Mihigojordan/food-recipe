@@ -42,7 +42,33 @@ router.get('/notifications', async(req, res) => {
         console.error('Error retrieving notifications:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
+
 });
+
+// DELETE alarm by ID using Sequelize
+router.delete('/notifications/:id', async(req, res) => {
+    const alarmId = req.params.id;
+
+    try {
+        // Find and delete the alarm by ID using Sequelize
+        const result = await Notification.destroy({
+            where: { id: alarmId }
+        });
+
+        if (result === 0) {
+            // No alarm was found with the given ID
+            return res.status(404).json({ message: 'Alarm not found' });
+        }
+
+        // Alarm successfully deleted
+        res.status(200).json({ message: 'Alarm deleted successfully' });
+    } catch (error) {
+        // Handle errors and respond with a 500 status
+        res.status(500).json({ message: 'Error deleting alarm', error: error.message });
+    }
+});
+
+module.exports = router;
 // Scheduler: Check for notifications every minute
 cron.schedule('* * * * *', async() => {
     console.log('Checking for scheduled notifications...');
