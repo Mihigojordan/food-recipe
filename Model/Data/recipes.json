@@ -1,0 +1,13 @@
+[{
+        "name": "Chicken Stir Fry",
+        "ingredients": ["chicken", "carrot", "spinach", "garlic", "olive oil"],
+        "nutrition": { "totalCalories": 400, "carbs": 30, "fat": 20, "protein": 35, "fiber": 5 },
+        "variations": []
+    },
+    {
+        "name": "Beef Stew",
+        "ingredients": ["beef", "potato", "onion", "carrot"],
+        "nutrition": { "totalCalories": 500, "carbs": 50, "fat": 25, "protein": 45, "fiber": 10 },
+        "variations": []
+    }
+]

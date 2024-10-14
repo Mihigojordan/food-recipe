@@ -1,0 +1,7 @@
+Flask==2.3.3
+requests==2.28.2  # Optional, in case you want to fetch data from APIs
+python -m venv venv
+source venv/bin/activate   # On Windows use `venv\Scripts\activate`
+pip install -r requirements.txt
+python app.py
+curl "http://127.0.0.1:5000/generate_recipes?num=5"
