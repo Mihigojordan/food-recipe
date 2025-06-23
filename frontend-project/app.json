@@ -1,0 +1,68 @@
+{
+    "expo": {
+        "name": "Food Recipe",
+        "slug": "food-recipe",
+        "version": "1.0.0",
+        "orientation": "portrait",
+        "icon": "./assets/icon.png",
+        "userInterfaceStyle": "light",
+        "splash": {
+            "image": "./assets/splash.png",
+            "resizeMode": "contain",
+            "backgroundColor": "#ffffff"
+        },
+        "assetBundlePatterns": [
+            "**/*"
+        ],
+        "ios": {
+            "supportsTablet": true,
+            "bundleIdentifier": "com.mihigojordan.MyNewProject",
+            "buildNumber": "1.0.0"
+        },
+        "android": {
+            "package": "com.fidele.foodrecipe",
+            "versionCode": 1,
+            "permissions": [
+                "CAMERA",
+                "READ_EXTERNAL_STORAGE",
+                "WRITE_EXTERNAL_STORAGE",
+                "INTERNET"
+            ],
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/adaptive-icon.png",
+                "backgroundColor": "#ffffff"
+            }
+        },
+        "web": {
+            "bundler": "metro",
+            "output": "static",
+            "favicon": "./assets/favicon.png"
+        },
+        "plugins": [
+            "expo-router",
+            [
+                "expo-notifications",
+                {
+                    "icon": "./assets/notification-icon.png",
+                    "color": "#ffffff",
+                    "sounds": [
+                        "./assets/notification-sound.wav"
+                    ]
+                }
+            ]
+        ],
+        "experiments": {
+            "typedRoutes": true
+        },
+        "extra": {
+            "eas": {
+                "projectId": "85a284b0-eb35-42a5-a4ed-5f5a37659808"
+            }
+        },
+        "updates": {
+            "fallbackToCacheTimeout": 0
+        },
+        "scheme": "food-recipe",
+        "owner": "mihigojordan"
+    }
+}
